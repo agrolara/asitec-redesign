@@ -106,8 +106,8 @@ export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote, onOpenPitch }
             <a href="#catalogo" className="hover:text-amber-600 transition-colors">
               Catálogo de Productos
             </a>
-            <a href="#laboratorio" className="hover:text-amber-600 transition-colors">
-              Equipos SAG
+            <a href="#certificaciones" className="hover:text-amber-600 transition-colors">
+              Acreditaciones
             </a>
             <a href="#recetario" className="hover:text-amber-600 transition-colors">
               Recetas en Video
@@ -189,11 +189,11 @@ export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote, onOpenPitch }
                 Catálogo de Productos
               </a>
               <a 
-                href="#laboratorio" 
+                href="#certificaciones" 
                 onClick={() => setMobileMenuOpen(false)} 
                 className="p-2 hover:bg-slate-50 rounded-lg"
               >
-                Equipos de Laboratorio SAG
+                Acreditaciones & Certificaciones
               </a>
               <a 
                 href="#recetario" 

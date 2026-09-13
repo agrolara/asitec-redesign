@@ -84,7 +84,7 @@ export const Footer: React.FC = () => {
             <h4 className="font-bold text-white uppercase tracking-wider text-xs">Navegación</h4>
             <ul className="space-y-2 text-slate-400">
               <li><a href="#catalogo" className="hover:text-amber-400 transition-colors">Catálogo de Productos</a></li>
-              <li><a href="#laboratorio" className="hover:text-amber-400 transition-colors">Equipos de Laboratorio SAG</a></li>
+              <li><a href="#certificaciones" className="hover:text-amber-400 transition-colors">Acreditaciones & Certificaciones</a></li>
               <li><a href="#recetario" className="hover:text-amber-400 transition-colors">Recetas & Videos</a></li>
               <li><a href="#servicios" className="hover:text-amber-400 transition-colors">Servicios Industriales</a></li>
               <li><a href="#seguridad" className="hover:text-amber-400 transition-colors">Canal de Pago Banco de Chile</a></li>
@@ -99,7 +99,6 @@ export const Footer: React.FC = () => {
               <li>Mejoradores Rapidox</li>
               <li>Levadura Instantánea Up Bakery</li>
               <li>Mix Vitamínico & Enzimas SAG</li>
-              <li>Molinos Bastak & Glutomatic</li>
             </ul>
           </div>
 

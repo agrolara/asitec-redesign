@@ -6,7 +6,7 @@ import {
   Sparkles,
   Download,
   Wheat,
-  FlaskConical
+  Award
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
@@ -66,11 +66,11 @@ export const HeroSection: React.FC<Props> = ({ onOpenPitch, onExploreCatalog }) 
               </button>
 
               <a
-                href="#laboratorio"
+                href="#certificaciones"
                 className="px-6 py-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700 text-white font-semibold text-sm transition-all flex items-center gap-2 active:scale-95"
               >
-                <FlaskConical className="w-4 h-4 text-amber-400" />
-                <span>Línea Equipos SAG</span>
+                <Award className="w-4 h-4 text-amber-400" />
+                <span>Acreditación SAG</span>
               </a>
 
               <a

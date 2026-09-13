@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Package, 
-  FlaskConical, 
+  Award, 
   BookOpen, 
   Settings, 
   LogOut, 
@@ -13,7 +13,7 @@ import {
 import type { AdminUser } from '../../services/api';
 import { logout } from '../../services/api';
 import { AdminProducts } from './AdminProducts';
-import { AdminEquipments } from './AdminEquipments';
+import { AdminCertifications } from './AdminCertifications';
 import { AdminRecipes } from './AdminRecipes';
 import { AdminSettings } from './AdminSettings';
 
@@ -24,7 +24,7 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout, onGoToSite }) => {
-  const [activeSection, setActiveSection] = useState<'products' | 'equipments' | 'recipes' | 'settings'>('products');
+  const [activeSection, setActiveSection] = useState<'products' | 'certifications' | 'recipes' | 'settings'>('products');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -41,11 +41,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout, 
       badge: '45+ Fórmulas'
     },
     {
-      id: 'equipments' as const,
-      name: 'Equipos Laboratorio SAG',
-      description: 'Molinos Bastak, Falling Number',
-      icon: FlaskConical,
-      badge: 'Certificados'
+      id: 'certifications' as const,
+      name: 'Acreditaciones & Certificaciones',
+      description: 'Resoluciones SAG, Inocuidad, BPM',
+      icon: Award,
+      badge: 'Oficial'
     },
     {
       id: 'recipes' as const,
@@ -211,7 +211,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout, 
         {/* Área de Trabajo según Pestaña Activa */}
         <main className="flex-1 min-w-0">
           {activeSection === 'products' && <AdminProducts />}
-          {activeSection === 'equipments' && <AdminEquipments />}
+          {activeSection === 'certifications' && <AdminCertifications />}
           {activeSection === 'recipes' && <AdminRecipes />}
           {activeSection === 'settings' && <AdminSettings />}
         </main>

@@ -3,7 +3,6 @@ import {
   Cake, 
   Wheat, 
   Layers, 
-  FlaskConical, 
   ChevronRight 
 } from 'lucide-react';
 
@@ -43,16 +42,6 @@ export const CategoryNav: React.FC<Props> = ({ selectedCategory, onSelectCategor
       color: 'from-blue-600 to-indigo-600',
       bgLight: 'bg-blue-50',
       borderActive: 'border-blue-500 ring-2 ring-blue-500/20'
-    },
-    {
-      id: 'Equipos & Laboratorios',
-      title: 'Equipos de Laboratorio SAG',
-      subtitle: '6 equipos certificados',
-      description: 'Molinos Bastak C-4000, Glutomatic, Enzinumber y Termobalanzas con calibración SAG.',
-      icon: FlaskConical,
-      color: 'from-emerald-600 to-teal-600',
-      bgLight: 'bg-emerald-50',
-      borderActive: 'border-emerald-500 ring-2 ring-emerald-500/20'
     }
   ];
 
@@ -68,11 +57,11 @@ export const CategoryNav: React.FC<Props> = ({ selectedCategory, onSelectCategor
             Nuestras Líneas de Soluciones Industriales
           </h2>
           <p className="text-sm text-slate-600 mt-2">
-            Selecciona una división para explorar el catálogo técnico o ver la gama de equipamiento analítico.
+            Selecciona una división para explorar el catálogo técnico de materias primas y premezclas.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isSelected = selectedCategory === cat.id;
@@ -81,14 +70,9 @@ export const CategoryNav: React.FC<Props> = ({ selectedCategory, onSelectCategor
               <button
                 key={cat.id}
                 onClick={() => {
-                  if (cat.id === 'Equipos & Laboratorios') {
-                    const el = document.getElementById('laboratorio');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    onSelectCategory(cat.id);
-                    const el = document.getElementById('catalogo');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }
+                  onSelectCategory(cat.id);
+                  const el = document.getElementById('catalogo');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className={`text-left p-6 rounded-2xl border transition-all duration-300 relative group flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 ${
                   isSelected 

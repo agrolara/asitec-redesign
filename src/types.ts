@@ -1,7 +1,7 @@
 export interface Product {
   id: string;
   name: string;
-  category: 'Pastelería' | 'Panadería' | 'Insumos para Molinos' | 'Equipos & Laboratorios';
+  category: 'Pastelería' | 'Panadería' | 'Insumos para Molinos';
   subcategory: string;
   description: string;
   format: string;
@@ -19,16 +19,15 @@ export interface QuoteItem {
   notes?: string;
 }
 
-export interface LabEquipment {
+export interface Certification {
   id: string;
-  name: string;
-  brand?: string;
-  model?: string;
-  tagline: string;
-  description: string;
-  specs: string[];
-  sagCertified: boolean;
-  image: string;
+  badge: string;
+  institution: string;
+  resolution: string;
+  detail: string;
+  status: string;
+  documentUrl?: string;
+  year?: string;
 }
 
 export interface Recipe {

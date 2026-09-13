@@ -3,7 +3,7 @@ import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { CategoryNav } from './components/CategoryNav';
 import { CatalogSection } from './components/CatalogSection';
-import { SagLabSection } from './components/SagLabSection';
+import { CertificationsSection } from './components/CertificationsSection';
 import { RecipesSection } from './components/RecipesSection';
 import { ServicesSection } from './components/ServicesSection';
 import { TrustAndSecuritySection } from './components/TrustAndSecuritySection';
@@ -19,15 +19,15 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { 
   checkAuth, 
   getProducts, 
-  getEquipments, 
+  getCertifications, 
   getRecipes, 
   getSettings,
   type AdminUser 
 } from './services/api';
 
-import type { Product, QuoteItem, LabEquipment, Recipe } from './types';
+import type { Product, QuoteItem, Certification, Recipe } from './types';
 import { products as initialProducts } from './data/products';
-import { labEquipments as initialEquipments } from './data/equipments';
+import { initialCertifications } from './data/certifications';
 import { recipes as initialRecipes } from './data/recipes';
 
 export const App: React.FC = () => {
@@ -42,7 +42,7 @@ export const App: React.FC = () => {
 
   // Dynamic Data States (from MySQL API with fallback)
   const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [equipments, setEquipments] = useState<LabEquipment[]>(initialEquipments);
+  const [certifications, setCertifications] = useState<Certification[]>(initialCertifications);
   const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes);
   const [_settings, setSettings] = useState<Record<string, string>>({});
 
@@ -85,14 +85,14 @@ export const App: React.FC = () => {
 
       // 2. Cargar datos dinámicos desde API / MySQL (con fallback silencioso)
       try {
-        const [prodsData, eqsData, recsData, setsData] = await Promise.all([
+        const [prodsData, certsData, recsData, setsData] = await Promise.all([
           getProducts(),
-          getEquipments(),
+          getCertifications(),
           getRecipes(),
           getSettings()
         ]);
         if (prodsData && prodsData.length > 0) setProducts(prodsData);
-        if (eqsData && eqsData.length > 0) setEquipments(eqsData);
+        if (certsData && certsData.length > 0) setCertifications(certsData);
         if (recsData && recsData.length > 0) setRecipes(recsData);
         if (setsData) setSettings(setsData);
       } catch (err) {
@@ -150,22 +150,6 @@ export const App: React.FC = () => {
 
   const handleClearQuote = () => {
     setQuoteItems([]);
-  };
-
-  const handleQuoteEquipment = (eq: LabEquipment) => {
-    const eqProduct: Product = {
-      id: `eq-${eq.id}`,
-      name: `${eq.name} (${eq.brand || 'SAG'})`,
-      category: 'Equipos & Laboratorios',
-      subcategory: 'Equipamiento Analítico SAG',
-      description: eq.description,
-      format: `Unidad Analítica Calibrada SAG (${eq.model || 'Estándar'})`,
-      shelfLife: 'Garantía 1 año con servicio técnico oficial',
-      country: 'Chile / Alemania',
-      image: eq.image
-    };
-    handleAddToQuote(eqProduct, eqProduct.format, 1);
-    setIsQuoteOpen(true);
   };
 
   const handleExploreCatalog = () => {
@@ -238,9 +222,8 @@ export const App: React.FC = () => {
           onQuickAdd={handleQuickAdd}
         />
 
-        <SagLabSection
-          equipments={equipments}
-          onQuoteEquipment={handleQuoteEquipment}
+        <CertificationsSection
+          certifications={certifications}
         />
 
         <RecipesSection

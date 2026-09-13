@@ -1,8 +1,8 @@
-import type { Product, LabEquipment, Recipe } from '../types';
+import type { Product, Recipe, Certification } from '../types';
 import { products as staticProducts } from '../data/products';
-import { labEquipments as staticEquipments } from '../data/equipments';
 import { recipes as staticRecipes } from '../data/recipes';
 import { companyInfo as staticCompanyInfo } from '../data/company';
+import { initialCertifications as staticCertifications } from '../data/certifications';
 
 const API_BASE = '/api';
 
@@ -144,66 +144,67 @@ export async function deleteProduct(productId: string): Promise<void> {
 }
 
 // -------------------------------------------------------------
-// 2. EQUIPOS DE LABORATORIO SAG
+// 2. CERTIFICACIONES Y ACREDITACIONES OFICIALES
 // -------------------------------------------------------------
-export async function getEquipments(): Promise<LabEquipment[]> {
+export async function getCertifications(): Promise<Certification[]> {
   try {
-    const res = await fetch(`${API_BASE}/equipments.php`);
+    const res = await fetch(`${API_BASE}/certifications.php`);
     const { isPhp, json } = await safeParseJson(res);
-    if (!isPhp && json && json.success && Array.isArray(json.equipments) && json.equipments.length > 0) {
-      return json.equipments;
+    if (!isPhp && json && json.success && Array.isArray(json.certifications) && json.certifications.length > 0) {
+      return json.certifications;
     }
   } catch (err) {
-    console.warn('API /api/equipments.php no disponible. Usando datos locales de respaldo.', err);
+    console.warn('API /api/certifications.php no disponible. Usando datos locales de respaldo.', err);
   }
-  return staticEquipments;
+  return staticCertifications;
 }
 
-export async function saveEquipment(eq: Partial<LabEquipment>, isNew: boolean): Promise<LabEquipment> {
+export async function saveCertification(cert: Partial<Certification>, isNew: boolean): Promise<Certification> {
   try {
     const method = isNew ? 'POST' : 'PUT';
-    const res = await fetch(`${API_BASE}/equipments.php`, {
+    const res = await fetch(`${API_BASE}/certifications.php`, {
       method,
       headers: getAuthHeaders(),
-      body: JSON.stringify(eq)
+      body: JSON.stringify(cert)
     });
 
     const { isPhp, json } = await safeParseJson(res);
-    if (!isPhp && json && json.success && json.equipment) {
-      return json.equipment;
+    if (!isPhp && json && json.success && json.certification) {
+      return json.certification;
     }
   } catch {
     // Entorno local sin backend PHP
   }
 
   return {
-    id: eq.id || `eq-${Date.now()}`,
-    name: eq.name || 'Equipo Analítico',
-    brand: eq.brand || 'Bastak',
-    model: eq.model || '',
-    tagline: eq.tagline || '',
-    description: eq.description || '',
-    specs: eq.specs || [],
-    sagCertified: eq.sagCertified ?? true,
-    image: eq.image || 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600&q=80'
+    id: cert.id || `cert-${Date.now()}`,
+    badge: cert.badge || 'Acreditación Oficial',
+    institution: cert.institution || 'Servicio Agrícola y Ganadero (SAG)',
+    resolution: cert.resolution || 'Resolución Exenta',
+    detail: cert.detail || '',
+    status: cert.status || '100% Vigente',
+    documentUrl: cert.documentUrl || '',
+    year: cert.year || '2024'
   };
 }
 
-export async function deleteEquipment(eqId: string): Promise<void> {
+export async function deleteCertification(certId: string): Promise<void> {
   try {
-    const res = await fetch(`${API_BASE}/equipments.php?id=${encodeURIComponent(eqId)}`, {
+    const res = await fetch(`${API_BASE}/certifications.php?id=${encodeURIComponent(certId)}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
 
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && !json.success) {
-      throw new Error(json.error || 'Error al eliminar el equipo.');
+      throw new Error(json.error || 'Error al eliminar la certificación.');
     }
   } catch (err: unknown) {
     if (err instanceof Error && err.message.includes('Error al')) throw err;
   }
 }
+
+
 
 // -------------------------------------------------------------
 // 3. RECETARIO Y VIDEOS
