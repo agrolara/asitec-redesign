@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { 
   X, 
   Trash2, 
-  Send, 
   Mail, 
   ShoppingCart, 
   Plus, 
@@ -46,14 +45,14 @@ export const QuoteDrawer: React.FC<Props> = ({
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const generateQuoteText = () => {
-    let msg = `*SOLICITUD DE COTIZACIÓN - ASITEC S.A.*\n`;
+    let msg = `SOLICITUD DE COTIZACIÓN - ASITEC S.A.\n`;
     msg += `------------------------------------\n`;
-    msg += `*Cliente:* ${formData.name || 'Sin especificar'}\n`;
-    msg += `*Empresa:* ${formData.company || 'Sin especificar'}\n`;
-    msg += `*Teléfono:* ${formData.phone || 'Sin especificar'}\n`;
-    msg += `*Email:* ${formData.email || 'Sin especificar'}\n`;
-    msg += `*Ciudad/Región:* ${formData.city || 'Sin especificar'}\n\n`;
-    msg += `*PRODUCTOS / EQUIPOS SOLICITADOS:*\n`;
+    msg += `Cliente: ${formData.name || 'Sin especificar'}\n`;
+    msg += `Empresa / Panadería: ${formData.company || 'Sin especificar'}\n`;
+    msg += `Teléfono: ${formData.phone || 'Sin especificar'}\n`;
+    msg += `Email: ${formData.email || 'Sin especificar'}\n`;
+    msg += `Ciudad/Región: ${formData.city || 'Sin especificar'}\n\n`;
+    msg += `PRODUCTOS SOLICITADOS:\n`;
     
     items.forEach((item, index) => {
       msg += `${index + 1}. ${item.product.name}\n`;
@@ -63,35 +62,16 @@ export const QuoteDrawer: React.FC<Props> = ({
     });
 
     if (formData.notes) {
-      msg += `\n*Detalles adicionales:*\n${formData.notes}\n`;
+      msg += `\nDetalles adicionales:\n${formData.notes}\n`;
     }
 
     msg += `\n------------------------------------\n`;
-    msg += `Solicitado desde plataforma web Asitec 2.0`;
+    msg += `Solicitado formalmente desde la plataforma web oficial de ASITEC S.A.`;
     return msg;
   };
 
-  const handleSendWhatsApp = (e: React.FormEvent) => {
+  const handleSendEmail = (e: React.FormEvent) => {
     e.preventDefault();
-    if (items.length === 0) return;
-
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-
-    const text = generateQuoteText();
-    const waUrl = `https://wa.me/56992671171?text=${encodeURIComponent(text)}`;
-    window.open(waUrl, '_blank');
-
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 4000);
-  };
-
-  const handleSendEmail = () => {
     if (items.length === 0) return;
 
     confetti({
@@ -145,7 +125,7 @@ export const QuoteDrawer: React.FC<Props> = ({
               <ShoppingCart className="w-12 h-12 text-slate-300 mx-auto" />
               <h4 className="text-base font-bold text-slate-800">Tu cotizador está vacío</h4>
               <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                Explora el catálogo o la línea de equipos SAG y añade productos con el botón &ldquo;Añadir a Cotización&rdquo;.
+                Explora el catálogo de productos y añade insumos con el botón &ldquo;Añadir a Cotización&rdquo;.
               </p>
               <button
                 onClick={onClose}
@@ -219,7 +199,7 @@ export const QuoteDrawer: React.FC<Props> = ({
               </div>
 
               {/* Client Contact Form */}
-              <form onSubmit={handleSendWhatsApp} className="space-y-3 pt-4 border-t border-slate-200 text-xs">
+              <form onSubmit={handleSendEmail} className="space-y-3 pt-4 border-t border-slate-200 text-xs">
                 <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">
                   Datos de Contacto para la Cotización:
                 </h4>
@@ -302,27 +282,18 @@ export const QuoteDrawer: React.FC<Props> = ({
                 {submitted && (
                   <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>¡Solicitud preparada exitosamente! Se abrió el canal de envío.</span>
+                    <span>¡Solicitud preparada exitosamente! Abriendo tu correo oficial...</span>
                   </div>
                 )}
 
                 {/* Actions */}
-                <div className="pt-2 space-y-2">
+                <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                    className="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all shadow-md active:scale-95 group"
                   >
-                    <Send className="w-4 h-4" />
-                    <span>Enviar Cotización por WhatsApp (Inmediato)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleSendEmail}
-                    className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <Mail className="w-4 h-4 text-amber-400" />
-                    <span>Enviar vía Correo Oficial (info@asitec.cl)</span>
+                    <Mail className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                    <span>Enviar Cotización por Correo Oficial (info@asitec.cl)</span>
                   </button>
                 </div>
               </form>
