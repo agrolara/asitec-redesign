@@ -10,9 +10,10 @@ import {
   X
 } from 'lucide-react';
 import type { Product } from '../types';
-import { products } from '../data/products';
+import { products as staticProducts } from '../data/products';
 
 interface Props {
+  products?: Product[];
   selectedCategory: string;
   onSelectCategory: (cat: string) => void;
   onSelectProduct: (p: Product) => void;
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export const CatalogSection: React.FC<Props> = ({ 
+  products = staticProducts,
   selectedCategory, 
   onSelectCategory, 
   onSelectProduct, 
@@ -36,7 +38,7 @@ export const CatalogSection: React.FC<Props> = ({
       : products.filter(p => p.category === selectedCategory);
     const set = new Set(relevant.map(p => p.subcategory));
     return ['Todos', ...Array.from(set)];
-  }, [selectedCategory]);
+  }, [products, selectedCategory]);
 
   // Filtered products list
   const filteredProducts = useMemo(() => {

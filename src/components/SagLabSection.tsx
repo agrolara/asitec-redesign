@@ -9,15 +9,25 @@ import {
   FileCheck,
   PackageCheck
 } from 'lucide-react';
-import { labEquipments, sagCertification } from '../data/equipments';
+import { labEquipments as staticEquipments, sagCertification } from '../data/equipments';
 import type { LabEquipment } from '../types';
 
 interface Props {
+  equipments?: LabEquipment[];
   onQuoteEquipment: (eq: LabEquipment) => void;
 }
 
-export const SagLabSection: React.FC<Props> = ({ onQuoteEquipment }) => {
-  const [selectedEq, setSelectedEq] = useState<LabEquipment>(labEquipments[0]);
+export const SagLabSection: React.FC<Props> = ({ 
+  equipments = staticEquipments, 
+  onQuoteEquipment 
+}) => {
+  const [selectedEq, setSelectedEq] = useState<LabEquipment>(equipments[0] || staticEquipments[0]);
+
+  React.useEffect(() => {
+    if (equipments && equipments.length > 0) {
+      setSelectedEq(equipments[0]);
+    }
+  }, [equipments]);
 
   return (
     <section id="laboratorio" className="py-20 bg-slate-900 text-white relative overflow-hidden">
@@ -79,7 +89,7 @@ export const SagLabSection: React.FC<Props> = ({ onQuoteEquipment }) => {
           
           {/* Equipment Navigation Selector */}
           <div className="lg:col-span-5 space-y-3">
-            {labEquipments.map((eq) => {
+            {equipments.map((eq) => {
               const isSelected = selectedEq.id === eq.id;
 
               return (

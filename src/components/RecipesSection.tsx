@@ -7,15 +7,21 @@ import {
   ShoppingCart, 
   ArrowRight
 } from 'lucide-react';
-import { recipes } from '../data/recipes';
+import { recipes as staticRecipes } from '../data/recipes';
 import type { Recipe, Product } from '../types';
-import { products } from '../data/products';
+import { products as staticProducts } from '../data/products';
 
 interface Props {
+  recipes?: Recipe[];
+  products?: Product[];
   onQuickAdd: (p: Product) => void;
 }
 
-export const RecipesSection: React.FC<Props> = ({ onQuickAdd }) => {
+export const RecipesSection: React.FC<Props> = ({ 
+  recipes = staticRecipes, 
+  products = staticProducts, 
+  onQuickAdd 
+}) => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   const handleAddIngredient = (recipe: Recipe) => {

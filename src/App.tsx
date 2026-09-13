@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { CategoryNav } from './components/CategoryNav';
@@ -13,16 +13,106 @@ import { ProductModal } from './components/ProductModal';
 import { QuoteDrawer } from './components/QuoteDrawer';
 import { ExecutivePitchModal } from './components/ExecutivePitchModal';
 
-import type { Product, QuoteItem, LabEquipment } from './types';
+// Admin Components & Services
+import { AdminLogin } from './components/admin/AdminLogin';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { 
+  checkAuth, 
+  getProducts, 
+  getEquipments, 
+  getRecipes, 
+  getSettings,
+  type AdminUser 
+} from './services/api';
+
+import type { Product, QuoteItem, LabEquipment, Recipe } from './types';
+import { products as initialProducts } from './data/products';
+import { labEquipments as initialEquipments } from './data/equipments';
+import { recipes as initialRecipes } from './data/recipes';
 
 export const App: React.FC = () => {
+  // Routing State (/admin o #admin)
+  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(() => {
+    return window.location.pathname.endsWith('/admin') || 
+           window.location.pathname === '/admin' || 
+           window.location.hash === '#admin';
+  });
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [checkingAuth, setCheckingAuth] = useState<boolean>(true);
+
+  // Dynamic Data States (from MySQL API with fallback)
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [equipments, setEquipments] = useState<LabEquipment[]>(initialEquipments);
+  const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes);
+  const [_settings, setSettings] = useState<Record<string, string>>({});
+
+  // Public UI States
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [isQuoteOpen, setIsQuoteOpen] = useState<boolean>(false);
   const [isPitchOpen, setIsPitchOpen] = useState<boolean>(false);
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
 
-  // Add product with specific format & qty
+  // Escuchar cambios de URL o Hash para navegación a /admin
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const isAdm = window.location.pathname.endsWith('/admin') || 
+                    window.location.pathname === '/admin' || 
+                    window.location.hash === '#admin';
+      setIsAdminRoute(isAdm);
+    };
+
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
+  }, []);
+
+  // Verificar sesión y cargar datos al iniciar
+  useEffect(() => {
+    const initApp = async () => {
+      // 1. Verificar sesión activa
+      try {
+        const user = await checkAuth();
+        setAdminUser(user);
+      } catch {
+        setAdminUser(null);
+      } finally {
+        setCheckingAuth(false);
+      }
+
+      // 2. Cargar datos dinámicos desde API / MySQL (con fallback silencioso)
+      try {
+        const [prodsData, eqsData, recsData, setsData] = await Promise.all([
+          getProducts(),
+          getEquipments(),
+          getRecipes(),
+          getSettings()
+        ]);
+        if (prodsData && prodsData.length > 0) setProducts(prodsData);
+        if (eqsData && eqsData.length > 0) setEquipments(eqsData);
+        if (recsData && recsData.length > 0) setRecipes(recsData);
+        if (setsData) setSettings(setsData);
+      } catch (err) {
+        console.warn('Uso de datos estáticos de respaldo debido a desconexión del backend:', err);
+      }
+    };
+
+    initApp();
+  }, []);
+
+  const handleGoToSite = () => {
+    if (window.location.hash === '#admin') {
+      window.location.hash = '';
+    } else if (window.location.pathname.endsWith('/admin')) {
+      window.history.pushState(null, '', '/');
+    }
+    setIsAdminRoute(false);
+  };
+
+  // Carrito de Cotizaciones (RFQ)
   const handleAddToQuote = (product: Product, format: string, qty: number) => {
     setQuoteItems((prev) => {
       const existingIdx = prev.findIndex((item) => item.product.id === product.id && item.selectedFormat === format);
@@ -35,13 +125,11 @@ export const App: React.FC = () => {
     });
   };
 
-  // Quick 1-click add from catalog card
   const handleQuickAdd = (product: Product) => {
     const defaultFormat = product.format ? product.format.split(/(?=Saco|Caja|Balde)/g)[0].trim() : 'Formato Estándar Industrial';
     handleAddToQuote(product, defaultFormat, 1);
   };
 
-  // Update item quantity inside quote cart
   const handleUpdateQty = (productId: string, delta: number) => {
     setQuoteItems((prev) =>
       prev
@@ -56,17 +144,14 @@ export const App: React.FC = () => {
     );
   };
 
-  // Remove single item from cart
   const handleRemoveItem = (productId: string) => {
     setQuoteItems((prev) => prev.filter((item) => item.product.id !== productId));
   };
 
-  // Clear all items in cart
   const handleClearQuote = () => {
     setQuoteItems([]);
   };
 
-  // Convert lab equipment to quotable item
   const handleQuoteEquipment = (eq: LabEquipment) => {
     const eqProduct: Product = {
       id: `eq-${eq.id}`,
@@ -90,6 +175,40 @@ export const App: React.FC = () => {
 
   const totalQuoteCount = quoteItems.reduce((acc, curr) => acc + curr.quantity, 0);
 
+  // -------------------------------------------------------------
+  // RENDERIZADO: PANEL DE ADMINISTRACIÓN (/admin o #admin)
+  // -------------------------------------------------------------
+  if (isAdminRoute) {
+    if (checkingAuth) {
+      return (
+        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white">
+          <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-sm font-medium text-slate-400">Verificando credenciales de seguridad...</p>
+        </div>
+      );
+    }
+
+    if (adminUser) {
+      return (
+        <AdminDashboard
+          user={adminUser}
+          onLogout={() => setAdminUser(null)}
+          onGoToSite={handleGoToSite}
+        />
+      );
+    }
+
+    return (
+      <AdminLogin
+        onLoginSuccess={(user) => setAdminUser(user)}
+        onBackToSite={handleGoToSite}
+      />
+    );
+  }
+
+  // -------------------------------------------------------------
+  // RENDERIZADO: SITIO WEB PÚBLICO
+  // -------------------------------------------------------------
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col justify-between">
       {/* Navigation */}
@@ -99,7 +218,7 @@ export const App: React.FC = () => {
         onOpenPitch={() => setIsPitchOpen(true)}
       />
 
-      {/* Main Content Sections */}
+      {/* Main Content Sections con Datos Dinámicos */}
       <main className="flex-1">
         <HeroSection
           onOpenPitch={() => setIsPitchOpen(true)}
@@ -112,6 +231,7 @@ export const App: React.FC = () => {
         />
 
         <CatalogSection
+          products={products}
           selectedCategory={selectedCategory}
           onSelectCategory={(cat) => setSelectedCategory(cat)}
           onSelectProduct={(p) => setActiveProduct(p)}
@@ -119,10 +239,13 @@ export const App: React.FC = () => {
         />
 
         <SagLabSection
+          equipments={equipments}
           onQuoteEquipment={handleQuoteEquipment}
         />
 
         <RecipesSection
+          recipes={recipes}
+          products={products}
           onQuickAdd={handleQuickAdd}
         />
 
@@ -135,7 +258,7 @@ export const App: React.FC = () => {
         <ContactSection />
       </main>
 
-      {/* Footer */}
+      {/* Footer con enlace a Administración */}
       <Footer />
 
       {/* Product Detail Modal */}

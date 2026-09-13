@@ -1,0 +1,55 @@
+# ==========================================================
+# ASITEC S.A. - Configuración Apache para cPanel
+# Soporte de SPA React + API PHP + Protección de Correos
+# ==========================================================
+
+Options -Indexes
+ServerSignature Off
+
+# 1. Protección de archivos sensibles
+<FilesMatch "(^\.|\.sql$|\.env$|\.git|composer\.lock)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 2. Compresión GZIP / Deflate para carga ultrarrápida
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# 3. Cabeceras de Seguridad Básicas
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# 4. Enrutamiento SPA (React 19) + API PHP
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Si la petición va a la API (/api/...) no reescribir
+    RewriteRule ^api/ - [L]
+
+    # Si la petición va a uploads (/uploads/...) no reescribir
+    RewriteRule ^uploads/ - [L]
+
+    # Si el archivo o directorio solicitado existe físicamente en el servidor, servirlo directamente
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Para cualquier otra ruta (incluyendo /admin), enviar a index.html para que React se encargue
+    RewriteRule ^ index.html [L]
+</IfModule>

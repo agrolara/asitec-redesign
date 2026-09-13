@@ -6,7 +6,8 @@ import {
   Mail, 
   MapPin, 
   ArrowUp,
-  Award
+  Award,
+  Lock
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
@@ -129,14 +130,24 @@ export const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} ASITEC S.A. Todos los derechos reservados. Rediseño moderno de alto rendimiento.
           </div>
 
-          <button
-            onClick={scrollToTop}
-            className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors border border-slate-800 flex items-center gap-1.5"
-            title="Volver arriba"
-          >
-            <span>Subir</span>
-            <ArrowUp className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-4">
+            <a
+              href="#admin"
+              className="inline-flex items-center gap-1.5 text-slate-500 hover:text-amber-400 transition-colors"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Acceso Administración</span>
+            </a>
+            <span className="text-slate-800">|</span>
+            <button
+              onClick={scrollToTop}
+              className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors border border-slate-800 flex items-center gap-1.5"
+              title="Volver arriba"
+            >
+              <span>Subir</span>
+              <ArrowUp className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
       </div>
