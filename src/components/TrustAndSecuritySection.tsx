@@ -7,8 +7,7 @@ import {
   CreditCard, 
   ExternalLink, 
   Phone, 
-  Mail, 
-  Send
+  Mail
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
@@ -148,7 +147,7 @@ export const TrustAndSecuritySection: React.FC = () => {
                 <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center gap-3">
                   <Phone className="w-4 h-4 text-amber-600 shrink-0" />
                   <div>
-                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Teléfono / WhatsApp</span>
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Teléfono de Contacto</span>
                     <a href={`tel:${companyInfo.distributor.phoneRaw}`} className="font-semibold text-slate-900 hover:text-amber-600">
                       {companyInfo.distributor.phone}
                     </a>
@@ -167,25 +166,15 @@ export const TrustAndSecuritySection: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center gap-3">
+            <div className="mt-6 pt-4 border-t border-slate-200">
               <a
                 href={companyInfo.distributor.catalogUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto flex-1 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold text-center transition-colors flex items-center justify-center gap-2 shadow-sm"
+                className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold text-center transition-colors flex items-center justify-center gap-2 shadow-sm"
               >
                 <span>Ver Catálogo Ataelqui</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-
-              <a
-                href={`https://wa.me/56992671171?text=${encodeURIComponent('Hola Ataelqui, me interesa cotizar productos Asitec para la 3ra/4ta región.')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold text-center transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
+                <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
               </a>
             </div>
 
