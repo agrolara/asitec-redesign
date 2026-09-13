@@ -5,7 +5,7 @@ import {
   ShoppingCart, 
   Package, 
   Clock, 
-  FileText, 
+  Eye, 
   Check, 
   X
 } from 'lucide-react';
@@ -243,10 +243,10 @@ export const CatalogSection: React.FC<Props> = ({
                         e.stopPropagation();
                         onSelectProduct(product);
                       }}
-                      className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
                     >
-                      <FileText className="w-3.5 h-3.5 text-slate-500" />
-                      <span>Ficha Técnica</span>
+                      <Eye className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Ver Producto</span>
                     </button>
 
                     <button

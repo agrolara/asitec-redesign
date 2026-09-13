@@ -275,32 +275,6 @@ export const products: Product[] = [
     "popular": false
   },
   {
-    "id": "pasteler-a-22",
-    "name": "Brillo Gel Frío, marca Springel, España",
-    "category": "Pastelería",
-    "subcategory": "Productos Importados Pastelería",
-    "description": "Brillo gel frío, especial para aplicar en tartaletas, masas dulces y postres.",
-    "format": "Balde de 6 Kg",
-    "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
-    "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/06/springel.jpg",
-    "sourceUrl": "https://www.asitec.cl/linea-de-productos-pasteleria-importados/",
-    "popular": false
-  },
-  {
-    "id": "pasteler-a-23",
-    "name": "Premezcla Eclair, España",
-    "category": "Pastelería",
-    "subcategory": "Productos Importados Pastelería",
-    "description": "Premezcla para elaborar Eclair, Masa Choux y/o Repollitos.",
-    "format": "Saco de 10 Kg",
-    "shelfLife": "06 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
-    "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/06/eclair-asitec.jpg",
-    "sourceUrl": "https://www.asitec.cl/linea-de-productos-pasteleria-importados/",
-    "popular": false
-  },
-  {
     "id": "panader-a-24",
     "name": "Premezclas para panadería Rapidox",
     "category": "Panadería",
