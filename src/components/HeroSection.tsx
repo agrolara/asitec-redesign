@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowRight, 
   ShieldCheck, 
   CheckCircle2, 
-  Download,
-  Wheat,
-  Award
+  Download, 
+  Wheat, 
+  Award,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
@@ -13,7 +15,38 @@ interface Props {
   onExploreCatalog: () => void;
 }
 
+const heroProductSlides = [
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-500g.jpg',
+    badge: 'Línea Rapidox & Premezclas',
+    title: 'Levadura Instantánea Rapidox Up Bakery',
+    subtitle: 'Casa Matriz Maipú'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg',
+    badge: 'Línea Rapidox & Premezclas',
+    title: 'Mejorador Marraqueta Tradicional',
+    subtitle: 'Fórmula Industrial Estandarizada'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png',
+    badge: 'Línea Rapidox & Premezclas',
+    title: 'Crema Pastelera y Premezclas Asitec',
+    subtitle: 'Bases Pasteleras de Alta Gama'
+  }
+];
+
 export const HeroSection: React.FC<Props> = ({ onExploreCatalog }) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroProductSlides.length);
+    }, 3800);
+    return () => clearInterval(timer);
+  }, [isHovered]);
   return (
     <section className="relative overflow-hidden bg-slate-950 text-white pt-12 pb-20 md:py-24">
       {/* Dynamic background lighting */}
@@ -95,23 +128,75 @@ export const HeroSection: React.FC<Props> = ({ onExploreCatalog }) => {
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 p-6 shadow-2xl">
               
-              {/* Image banner */}
-              <div className="relative h-64 rounded-xl overflow-hidden mb-6 border border-slate-800">
-                <img 
-                  src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1000&q=80" 
-                  alt="Panadería y Materias Primas Asitec" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-                
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                  <div className="bg-slate-900/90 backdrop-blur-md px-3 py-1 rounded-lg border border-slate-700 text-xs font-semibold text-amber-400 flex items-center gap-1.5">
-                    <Wheat className="w-3.5 h-3.5" />
-                    Línea Rapidox & Premezclas
+              {/* Product Showcase Carousel with 3 Real Products */}
+              <div 
+                className="relative h-64 rounded-xl overflow-hidden mb-6 border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 group select-none"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                {heroProductSlides.map((slide, idx) => (
+                  <div 
+                    key={idx}
+                    className={`absolute inset-0 transition-opacity duration-700 flex items-center justify-center p-4 ${
+                      currentSlide === idx ? 'opacity-100 pointer-events-auto z-10' : 'opacity-0 pointer-events-none z-0'
+                    }`}
+                  >
+                    {/* Background glow */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-slate-900/30" />
+                    
+                    {/* Real Product Photo */}
+                    <div className="relative z-10 w-full h-full flex items-center justify-center pb-8 pt-1">
+                      <img 
+                        src={slide.image} 
+                        alt={slide.title} 
+                        className="max-h-48 w-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] transition-transform duration-500 hover:scale-105"
+                      />
+                    </div>
+
+                    {/* Bottom Info Bar */}
+                    <div className="absolute bottom-2.5 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
+                      <div className="bg-slate-950/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700 text-[11px] font-semibold text-amber-400 flex items-center gap-1.5 shadow-md">
+                        <Wheat className="w-3.5 h-3.5 text-amber-400" />
+                        <span>{slide.badge}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-300 bg-slate-950/85 backdrop-blur-md px-2.5 py-1 rounded border border-slate-800 shadow-md">
+                        {slide.subtitle}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-[11px] text-slate-300 bg-slate-950/80 px-2 py-0.5 rounded">
-                    Casa Matriz Maipú
-                  </span>
+                ))}
+
+                {/* Left & Right Navigation Controls */}
+                <button
+                  type="button"
+                  onClick={() => setCurrentSlide((prev) => (prev === 0 ? heroProductSlides.length - 1 : prev - 1))}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-slate-900/80 hover:bg-amber-600 text-white border border-slate-700 opacity-0 group-hover:opacity-100 transition-all shadow-md active:scale-95"
+                  title="Anterior producto"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentSlide((prev) => (prev === heroProductSlides.length - 1 ? 0 : prev + 1))}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-slate-900/80 hover:bg-amber-600 text-white border border-slate-700 opacity-0 group-hover:opacity-100 transition-all shadow-md active:scale-95"
+                  title="Siguiente producto"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+
+                {/* Dots indicator */}
+                <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-slate-950/60 backdrop-blur-sm px-2 py-1 rounded-full border border-slate-800">
+                  {heroProductSlides.map((_, dotIdx) => (
+                    <button
+                      key={dotIdx}
+                      type="button"
+                      onClick={() => setCurrentSlide(dotIdx)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        currentSlide === dotIdx ? 'w-5 bg-amber-400' : 'w-1.5 bg-slate-600 hover:bg-slate-400'
+                      }`}
+                      title={`Ver producto ${dotIdx + 1}`}
+                    />
+                  ))}
                 </div>
               </div>
 

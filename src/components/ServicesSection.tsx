@@ -6,7 +6,8 @@ import {
   FlaskConical, 
   ArrowRight, 
   Factory, 
-  CheckCircle2 
+  CheckCircle2,
+  Mail
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
@@ -88,12 +89,13 @@ export const ServicesSection: React.FC<Props> = ({ onOpenQuote }) => {
               Desarrollamos premezclas a medida para optimizar el costo por kilo, color, tolerancia fermentativa y vida útil en anaquel de tus líneas de panificación y pastelería.
             </p>
           </div>
-          <button
-            onClick={onOpenQuote}
-            className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs tracking-wide shadow-md transition-all shrink-0 active:scale-95"
+          <a
+            href="mailto:info@asitec.cl?subject=Solicitud%20de%20Formulaci%C3%B3n%20Exclusiva%20o%20Maquila%20-%20Ingenier%C3%ADa%20de%20Procesos%20ASITEC&body=Estimado%20Equipo%20de%20Ingenier%C3%ADa%20de%20Procesos%20de%20ASITEC%20S.A.%2C%0A%0AMe%20gustar%C3%ADa%20solicitar%20informaci%C3%B3n%20y%20asesor%C3%ADa%20t%C3%A9cnica%20para%20un%20desarrollo%20personalizado%20%2F%20maquila%3A%0A%0A-%20Empresa%20o%20Raz%C3%B3n%20Social%3A%20%0A-%20Tipo%20de%20producto%20o%20formulaci%C3%B3n%20requerida%3A%20%0A-%20Volumen%20mensual%20estimado%3A%20%0A-%20Tel%C3%A9fono%20de%20contacto%3A%20%0A-%20Ciudad%20o%20Regi%C3%B3n%3A%20%0A%0ASaludos%20cordiales."
+            className="px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs tracking-wide shadow-md transition-all shrink-0 active:scale-95 flex items-center gap-2"
           >
-            Contactar a Ingeniería de Procesos
-          </button>
+            <Mail className="w-4 h-4 text-slate-950" />
+            <span>Contactar a Ingeniería de Procesos</span>
+          </a>
         </div>
 
       </div>
