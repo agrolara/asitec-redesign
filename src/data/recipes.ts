@@ -19,7 +19,7 @@ export const recipes: Recipe[] = [
     duration: '5 min',
     difficulty: 'Fácil',
     videoUrl: 'https://www.asitec.cl/wp-content/uploads/2024/05/Crema-chantilly.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '',
     description: 'Aprende a preparar y batir Crema Chantilly con volumen estable, textura tersa y sin desuerar, ideal para decoraciones finas.',
     recommendedProduct: 'Base Crema Chantilly Asitec',
     keySteps: [
@@ -36,7 +36,7 @@ export const recipes: Recipe[] = [
     duration: '25 min',
     difficulty: 'Fácil',
     videoUrl: 'https://www.asitec.cl/wp-content/uploads/2024/05/Brownie.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '',
     description: 'Elaboración de Brownie estilo fudge con costra craquelada brillante y centro chocolatoso denso y húmedo.',
     recommendedProduct: 'Premezcla Brownie Asitec',
     keySteps: [
@@ -53,7 +53,7 @@ export const recipes: Recipe[] = [
     duration: '40 min',
     difficulty: 'Intermedio',
     videoUrl: 'https://www.asitec.cl/wp-content/uploads/2024/05/queque-vainilla-chocolate.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1549576490-b0b4831ef60a?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '',
     description: 'Combinación armoniosa de queque esponjoso sabor vainilla con vetas de chocolate belga.',
     recommendedProduct: 'Premezclas Queques Asitec',
     keySteps: [
@@ -70,7 +70,7 @@ export const recipes: Recipe[] = [
     duration: '30 min',
     difficulty: 'Fácil',
     videoUrl: 'https://www.asitec.cl/wp-content/uploads/2024/05/bizcocho-vainilla.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '',
     description: 'Técnica profesional para brazos de reina, empolvados y tortas tradicionales con miga ligera y aireada.',
     recommendedProduct: 'Premezcla Bizcocho Vainilla Asitec',
     keySteps: [
@@ -87,7 +87,7 @@ export const recipes: Recipe[] = [
     duration: '25 min',
     difficulty: 'Fácil',
     videoUrl: 'https://www.asitec.cl/wp-content/uploads/2024/05/muffins.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '',
     description: 'Muffins de gran desarrollo vertical, corona agrietada dorada y miga excepcionalmente suave.',
     recommendedProduct: 'Premezcla Muffins Vainilla Asitec',
     keySteps: [
@@ -104,7 +104,7 @@ export const recipes: Recipe[] = [
     duration: '45 min',
     difficulty: 'Intermedio',
     videoUrl: 'https://www.asitec.cl/wp-content/uploads/2024/05/masas-dulces.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '',
     description: 'Preparación de trenzas, berlinesas, rollos de canela y donas con miga hilada de excelente conservación.',
     recommendedProduct: 'Premezcla Masas Dulces Asitec',
     keySteps: [
@@ -112,6 +112,40 @@ export const recipes: Recipe[] = [
       'Formar piezas y fermentar en cámara a 30°C con 75% de humedad.',
       'Hornear o freír según la preparación deseada.',
       'Rellenar con Crema Pastelera Asitec.'
+    ]
+  },
+  {
+    id: 'queque-berries-naranja',
+    title: 'Queque de Berries y Naranja',
+    category: 'Pastelería',
+    duration: '45 min',
+    difficulty: 'Fácil',
+    videoUrl: 'https://www.asitec.cl/wp-content/uploads/2024/05/queque-berries-naranja.mp4',
+    thumbnail: '',
+    description: 'Elaboración de queque esponjoso y aromático combinando notas cítricas de naranja y frutos del bosque.',
+    recommendedProduct: 'Premezcla Queque Berries y Naranja Asitec',
+    keySteps: [
+      'Mezclar Premezcla Queque Berries y Naranja con huevos, aceite y agua.',
+      'Batir a velocidad media durante 3 a 4 minutos.',
+      'Dosificar en moldes rectangulares o de corona.',
+      'Hornear a 170°C durante 40 a 45 minutos.'
+    ]
+  },
+  {
+    id: 'cocadas',
+    title: 'Cocadas Horneadas Artesanales',
+    category: 'Pastelería',
+    duration: '20 min',
+    difficulty: 'Fácil',
+    videoUrl: 'https://www.asitec.cl/wp-content/uploads/2024/05/cocadas.mp4',
+    thumbnail: '',
+    description: 'Preparación rápida de cocadas tradicionales con dorado parejo, exterior crocante y centro tierno y aromático a coco.',
+    recommendedProduct: 'Premezcla Cocadas Asitec',
+    keySteps: [
+      'Mezclar la Premezcla Cocadas Asitec con agua caliente según dosificación técnica.',
+      'Homogenizar con espátula hasta lograr una masa maleable.',
+      'Manguear o bolear las porciones sobre lata engrasada.',
+      'Hornear a 200°C por 10 a 12 minutos hasta obtener dorado parejo.'
     ]
   }
 ];

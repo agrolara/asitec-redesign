@@ -315,9 +315,17 @@ export const AdminRecipes: React.FC = () => {
               className="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col justify-between group"
             >
               <div>
-                {/* Miniatura del video / Imagen */}
-                <div className="relative h-44 bg-slate-100 overflow-hidden">
-                  {recipe.thumbnail ? (
+                {/* Miniatura del video / Primer frame original */}
+                <div className="relative h-44 bg-slate-950 overflow-hidden flex items-center justify-center">
+                  {recipe.videoUrl ? (
+                    <video
+                      src={`${recipe.videoUrl}#t=0.001`}
+                      preload="metadata"
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                    />
+                  ) : recipe.thumbnail ? (
                     <img
                       src={recipe.thumbnail}
                       alt={recipe.title}
@@ -326,7 +334,7 @@ export const AdminRecipes: React.FC = () => {
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 text-amber-800/60 p-4">
                       <Video className="w-10 h-10 mb-2" />
-                      <span className="text-xs font-medium">Sin miniatura personalizada</span>
+                      <span className="text-xs font-medium">Sin video cargado</span>
                     </div>
                   )}
 

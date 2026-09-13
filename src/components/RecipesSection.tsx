@@ -63,24 +63,26 @@ export const RecipesSection: React.FC<Props> = ({
               className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer flex flex-col justify-between"
             >
               <div>
-                {/* Thumbnail with Video Play Overlay */}
-                <div className="relative h-48 overflow-hidden bg-slate-900">
-                  <img 
-                    src={recipe.thumbnail} 
-                    alt={recipe.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                {/* Video con primer frame original */}
+                <div className="relative h-48 overflow-hidden bg-slate-950 flex items-center justify-center">
+                  <video 
+                    src={`${recipe.videoUrl}#t=0.001`} 
+                    preload="metadata"
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
                   />
-                  <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/10 transition-colors" />
+                  <div className="absolute inset-0 bg-slate-950/25 group-hover:bg-slate-950/5 transition-colors" />
 
                   {/* Play Button Icon */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg group-hover:scale-115 group-hover:bg-amber-400 transition-all">
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-12 h-12 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-amber-400 transition-all">
                       <Play className="w-5 h-5 fill-slate-950 ml-0.5" />
                     </div>
                   </div>
 
                   {/* Badges */}
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs">
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs pointer-events-none">
                     <span className="bg-slate-950/80 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-md font-semibold flex items-center gap-1">
                       <Clock className="w-3 h-3 text-amber-400" /> {recipe.duration}
                     </span>
