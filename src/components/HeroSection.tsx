@@ -18,21 +18,93 @@ interface Props {
 const heroProductSlides = [
   {
     image: 'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-500g.jpg',
-    badge: 'Línea Rapidox & Premezclas',
-    title: 'Levadura Instantánea Rapidox Up Bakery',
-    subtitle: 'Casa Matriz Maipú'
+    badge: 'Línea Panadería Rapidox',
+    title: 'Levadura Instantánea Up Bakery 500g',
+    subtitle: 'Alto Poder Fermentativo'
   },
   {
     image: 'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg',
-    badge: 'Línea Rapidox & Premezclas',
+    badge: 'Mejoradores Rapidox',
     title: 'Mejorador Marraqueta Tradicional',
-    subtitle: 'Fórmula Industrial Estandarizada'
+    subtitle: 'Fórmula Estandarizada'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta-especial.jpg',
+    badge: 'Mejoradores Rapidox',
+    title: 'Mejorador Marraqueta Especial',
+    subtitle: 'Fermentación Larga Industrial'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-para-allulla.jpg',
+    badge: 'Mejoradores Rapidox',
+    title: 'Mejorador Hallulla Tradicional',
+    subtitle: 'Miga Suave & Corteza Blanca'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/07/mejorador-marraqueta-reducido-en-50-sodio.jpg',
+    badge: 'Salud & Rendimiento',
+    title: 'Mejorador Marraqueta -50% Sodio',
+    subtitle: 'Cumplimiento Ley Etiquetado'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-11g.jpg',
+    badge: 'Línea Panadería Rapidox',
+    title: 'Levadura Instantánea Sachets 11g',
+    subtitle: 'Caja Display 360 unidades'
   },
   {
     image: 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png',
-    badge: 'Línea Rapidox & Premezclas',
-    title: 'Crema Pastelera y Premezclas Asitec',
-    subtitle: 'Bases Pasteleras de Alta Gama'
+    badge: 'Bases de Pastelería',
+    title: 'Crema Pastelera Asitec',
+    subtitle: 'Resiste Horneado y Congelado'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/04/WhatsApp-Image-2022-02-08-at-21.53.18-1.jpeg',
+    badge: 'Bases de Pastelería',
+    title: 'Crema Pastelera Especial',
+    subtitle: 'Repostería y Rellenos Finos'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-1.jpg',
+    badge: 'Bases de Pastelería',
+    title: 'Crema Chantilly Clásica',
+    subtitle: 'Volumen y Estabilidad'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-chocolate-1.jpg',
+    badge: 'Bases de Pastelería',
+    title: 'Crema Chantilly Chocolate',
+    subtitle: 'Sabor Intenso a Cacao'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/04/remojo-3-leches.jpg',
+    badge: 'Bases de Pastelería',
+    title: 'Remojo Torta 3 Leches',
+    subtitle: 'Base en Polvo Instantánea'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/04/brillo.jpg',
+    badge: 'Bases de Pastelería',
+    title: 'Brillo en Polvo para Tartaletas',
+    subtitle: 'Acabado Espejo Profesional'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/04/bases-para-preparar-merengue-1.jpg',
+    badge: 'Bases de Pastelería',
+    title: 'Merengue Tipo Italiano',
+    subtitle: 'Decoración y Pie de Limón'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_bizcocho_vainilla.jpg',
+    badge: 'Premezclas Industriales',
+    title: 'Premezcla Bizcocho Vainilla',
+    subtitle: 'Para Tortas y Brazo de Reina'
+  },
+  {
+    image: 'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_vainilla.jpg',
+    badge: 'Premezclas Industriales',
+    title: 'Premezcla Queque Vainilla',
+    subtitle: 'Miga Húmeda y Esponjosa'
   }
 ];
 
@@ -44,7 +116,7 @@ export const HeroSection: React.FC<Props> = ({ onExploreCatalog }) => {
     if (isHovered) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroProductSlides.length);
-    }, 3800);
+    }, 3600);
     return () => clearInterval(timer);
   }, [isHovered]);
   return (
@@ -128,7 +200,7 @@ export const HeroSection: React.FC<Props> = ({ onExploreCatalog }) => {
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 p-6 shadow-2xl">
               
-              {/* Product Showcase Carousel with 3 Real Products */}
+              {/* Product Showcase Carousel with 15 Real Products */}
               <div 
                 className="relative h-64 rounded-xl overflow-hidden mb-6 border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 group select-none"
                 onMouseEnter={() => setIsHovered(true)}
@@ -149,17 +221,18 @@ export const HeroSection: React.FC<Props> = ({ onExploreCatalog }) => {
                       <img 
                         src={slide.image} 
                         alt={slide.title} 
-                        className="max-h-48 w-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] transition-transform duration-500 hover:scale-105"
+                        className="max-h-48 w-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] transition-transform duration-500 hover:scale-105" 
+                        loading="lazy"
                       />
                     </div>
 
                     {/* Bottom Info Bar */}
-                    <div className="absolute bottom-2.5 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
-                      <div className="bg-slate-950/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700 text-[11px] font-semibold text-amber-400 flex items-center gap-1.5 shadow-md">
-                        <Wheat className="w-3.5 h-3.5 text-amber-400" />
-                        <span>{slide.badge}</span>
+                    <div className="absolute bottom-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none gap-2">
+                      <div className="bg-slate-950/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700 text-[11px] font-semibold text-amber-400 flex items-center gap-1.5 shadow-md truncate max-w-[65%]">
+                        <Wheat className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <span className="truncate">{slide.title}</span>
                       </div>
-                      <span className="text-[10px] text-slate-300 bg-slate-950/85 backdrop-blur-md px-2.5 py-1 rounded border border-slate-800 shadow-md">
+                      <span className="text-[10px] text-slate-300 bg-slate-950/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800 shadow-md shrink-0 truncate">
                         {slide.subtitle}
                       </span>
                     </div>
@@ -170,7 +243,7 @@ export const HeroSection: React.FC<Props> = ({ onExploreCatalog }) => {
                 <button
                   type="button"
                   onClick={() => setCurrentSlide((prev) => (prev === 0 ? heroProductSlides.length - 1 : prev - 1))}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-slate-900/80 hover:bg-amber-600 text-white border border-slate-700 opacity-0 group-hover:opacity-100 transition-all shadow-md active:scale-95"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-slate-900/80 hover:bg-amber-500 hover:text-slate-950 text-white border border-slate-700 opacity-0 group-hover:opacity-100 transition-all shadow-lg active:scale-95 cursor-pointer"
                   title="Anterior producto"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -178,25 +251,25 @@ export const HeroSection: React.FC<Props> = ({ onExploreCatalog }) => {
                 <button
                   type="button"
                   onClick={() => setCurrentSlide((prev) => (prev === heroProductSlides.length - 1 ? 0 : prev + 1))}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-slate-900/80 hover:bg-amber-600 text-white border border-slate-700 opacity-0 group-hover:opacity-100 transition-all shadow-md active:scale-95"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-slate-900/80 hover:bg-amber-500 hover:text-slate-950 text-white border border-slate-700 opacity-0 group-hover:opacity-100 transition-all shadow-lg active:scale-95 cursor-pointer"
                   title="Siguiente producto"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
 
-                {/* Dots indicator */}
-                <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-slate-950/60 backdrop-blur-sm px-2 py-1 rounded-full border border-slate-800">
-                  {heroProductSlides.map((_, dotIdx) => (
-                    <button
-                      key={dotIdx}
-                      type="button"
-                      onClick={() => setCurrentSlide(dotIdx)}
-                      className={`h-1.5 rounded-full transition-all ${
-                        currentSlide === dotIdx ? 'w-5 bg-amber-400' : 'w-1.5 bg-slate-600 hover:bg-slate-400'
-                      }`}
-                      title={`Ver producto ${dotIdx + 1}`}
-                    />
-                  ))}
+                {/* Counter & Slide Indicator Badge */}
+                <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-slate-800 text-[11px] font-mono shadow-sm">
+                  <span className="font-bold text-amber-400">{String(currentSlide + 1).padStart(2, '0')}</span>
+                  <span className="text-slate-500">/</span>
+                  <span className="text-slate-400">{heroProductSlides.length}</span>
+                </div>
+
+                {/* Progress bar along bottom edge */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-800/80 z-20 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-amber-500 to-amber-300 transition-all duration-300"
+                    style={{ width: `${((currentSlide + 1) / heroProductSlides.length) * 100}%` }}
+                  />
                 </div>
               </div>
 
