@@ -11,7 +11,6 @@ import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { ProductModal } from './components/ProductModal';
 import { QuoteDrawer } from './components/QuoteDrawer';
-import { ExecutivePitchModal } from './components/ExecutivePitchModal';
 
 // Admin Components & Services
 import { AdminLogin } from './components/admin/AdminLogin';
@@ -50,7 +49,6 @@ export const App: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [isQuoteOpen, setIsQuoteOpen] = useState<boolean>(false);
-  const [isPitchOpen, setIsPitchOpen] = useState<boolean>(false);
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
 
   // Escuchar cambios de URL o Hash para navegación a /admin
@@ -199,13 +197,11 @@ export const App: React.FC = () => {
       <Navbar
         quoteCount={totalQuoteCount}
         onOpenQuote={() => setIsQuoteOpen(true)}
-        onOpenPitch={() => setIsPitchOpen(true)}
       />
 
       {/* Main Content Sections con Datos Dinámicos */}
       <main className="flex-1">
         <HeroSection
-          onOpenPitch={() => setIsPitchOpen(true)}
           onExploreCatalog={handleExploreCatalog}
         />
 
@@ -259,12 +255,6 @@ export const App: React.FC = () => {
         onUpdateQty={handleUpdateQty}
         onRemoveItem={handleRemoveItem}
         onClear={handleClearQuote}
-      />
-
-      {/* Executive Pitch Deck for Managers */}
-      <ExecutivePitchModal
-        isOpen={isPitchOpen}
-        onClose={() => setIsPitchOpen(false)}
       />
     </div>
   );

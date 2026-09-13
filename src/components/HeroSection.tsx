@@ -3,7 +3,6 @@ import {
   ArrowRight, 
   ShieldCheck, 
   CheckCircle2, 
-  Sparkles,
   Download,
   Wheat,
   Award
@@ -11,11 +10,10 @@ import {
 import { companyInfo } from '../data/company';
 
 interface Props {
-  onOpenPitch: () => void;
   onExploreCatalog: () => void;
 }
 
-export const HeroSection: React.FC<Props> = ({ onOpenPitch, onExploreCatalog }) => {
+export const HeroSection: React.FC<Props> = ({ onExploreCatalog }) => {
   return (
     <section className="relative overflow-hidden bg-slate-950 text-white pt-12 pb-20 md:py-24">
       {/* Dynamic background lighting */}
@@ -27,19 +25,10 @@ export const HeroSection: React.FC<Props> = ({ onOpenPitch, onExploreCatalog }) 
         
         {/* Upper Announcement Badge */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold tracking-wide uppercase shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold tracking-wide uppercase shadow-sm">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
             Asitec S.A. &bull; Calidad Certificada en Alimentos
           </div>
-
-          <button
-            onClick={onOpenPitch}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-all"
-          >
-            <Sparkles className="w-3 h-3 text-amber-400" />
-            <span>Presentación Gerencial: Antes vs Después</span>
-            <ArrowRight className="w-3 h-3 text-slate-400" />
-          </button>
         </div>
 
         {/* Main Hero Grid */}
@@ -52,7 +41,7 @@ export const HeroSection: React.FC<Props> = ({ onOpenPitch, onExploreCatalog }) 
             </h1>
 
             <p className="text-base sm:text-lg text-slate-300 max-w-2xl font-normal leading-relaxed">
-              Más de <strong>26 años</strong> liderando el mercado chileno en premezclas de alta gama para panadería y pastelería, núcleos enzimáticos para molinos y calibración de instrumental analítico respaldado por el <strong>Servicio Agrícola y Ganadero (SAG)</strong>.
+              Más de <strong>26 años</strong> liderando el mercado chileno en premezclas de alta gama para panadería y pastelería, núcleos enzimáticos para molinos e insumos formulados con certificación oficial del <strong>Servicio Agrícola y Ganadero (SAG)</strong>.
             </p>
 
             {/* CTAs */}

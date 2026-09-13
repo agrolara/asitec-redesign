@@ -3,21 +3,18 @@ import {
   ShoppingCart, 
   Menu, 
   X, 
-  Sparkles, 
   ShieldCheck, 
   Phone, 
-  Download,
-  ChevronDown
+  Download
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
 interface Props {
   quoteCount: number;
   onOpenQuote: () => void;
-  onOpenPitch: () => void;
 }
 
-export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote, onOpenPitch }) => {
+export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -75,30 +72,13 @@ export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote, onOpenPitch }
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           
-          {/* Logo Brand */}
-          <a href="#" className="flex items-center gap-3 group">
+          {/* Logo Brand Oficial */}
+          <a href="#" className="flex items-center group py-0.5">
             <img 
               src="https://www.asitec.cl/wp-content/uploads/2021/03/logo721.png" 
-              alt="Asitec Logo" 
-              className="h-11 md:h-12 w-auto object-contain transition-transform group-hover:scale-105"
-              onError={(e) => {
-                // Fallback elegant logo text if network blocks image
-                e.currentTarget.style.display = 'none';
-              }}
+              alt="ASITEC S.A." 
+              className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105"
             />
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xl md:text-2xl font-black tracking-tight text-slate-900 font-sans">
-                  ASITEC<span className="text-amber-600">.</span>
-                </span>
-                <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded tracking-wider uppercase">
-                  S.A.
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 font-medium tracking-wide uppercase">
-                Innovación, Tecnología & Servicio
-              </p>
-            </div>
           </a>
 
           {/* Desktop Navigation Links */}
@@ -124,19 +104,9 @@ export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote, onOpenPitch }
             </a>
           </nav>
 
-          {/* Action CTAs: Pitch Button & Quote Cart */}
+          {/* Action CTAs: Quote Cart & Mobile Toggle */}
           <div className="flex items-center gap-3">
             
-            {/* Pitch for Managers button */}
-            <button
-              onClick={onOpenPitch}
-              className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/15 to-amber-600/20 hover:from-amber-500/25 hover:to-amber-600/30 text-amber-900 border border-amber-300 font-bold text-xs transition-all shadow-sm hover:shadow active:scale-95"
-              title="Abrir dossier de propuesta para gerencia"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-spin-slow" />
-              <span>Propuesta Gerencial</span>
-            </button>
-
             {/* Quote Cart Button */}
             <button
               onClick={onOpenQuote}
@@ -166,20 +136,6 @@ export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote, onOpenPitch }
         {/* Mobile menu drawer */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-6 space-y-4 shadow-xl animate-fade-in">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenPitch();
-              }}
-              className="w-full flex items-center justify-between p-3 rounded-xl bg-amber-500/15 border border-amber-300 text-amber-900 font-bold text-sm"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-600" />
-                <span>Ver Propuesta para Gerentes (Antes vs Después)</span>
-              </div>
-              <ChevronDown className="w-4 h-4 -rotate-90 text-amber-700" />
-            </button>
-
             <nav className="flex flex-col space-y-3 font-semibold text-slate-800 text-sm">
               <a 
                 href="#catalogo" 
