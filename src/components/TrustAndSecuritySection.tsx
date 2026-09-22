@@ -5,9 +5,8 @@ import {
   Copy, 
   Check, 
   CreditCard, 
-  ExternalLink, 
-  Phone, 
-  Mail
+  Mail,
+  Building2
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
@@ -21,163 +20,106 @@ export const TrustAndSecuritySection: React.FC = () => {
   };
 
   return (
-    <section id="seguridad" className="py-20 bg-white border-b border-slate-200">
+    <section id="seguridad" className="py-16 bg-white border-b border-orange-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-bold text-emerald-800 uppercase tracking-widest bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200">
-            Confianza Institucional & Ciberseguridad
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <span className="text-xs font-bold text-orange-700 uppercase tracking-widest bg-orange-100/70 px-3.5 py-1 rounded-full border border-orange-200">
+            Seguridad Institucional & Ciberseguridad
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-2">
-            Canales Oficiales Verificados & Red de Distribución
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-3">
+            Canales Oficiales Verificados de Recaudación
           </h2>
-          <p className="text-sm text-slate-600 mt-2">
-            Verifica nuestras cuentas oficiales de recaudación y contacta a nuestra red autorizada para el norte del país.
+          <p className="text-xs sm:text-sm text-slate-600 mt-2">
+            Canal bancario único y verificado para la emisión de pagos de insumos y materias primas industriales.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        {/* Centered Bank Account Card (Bakels White & Orange Pastel Style) */}
+        <div className="max-w-3xl mx-auto bg-gradient-to-br from-white via-orange-50/20 to-amber-50/30 rounded-3xl p-6 sm:p-9 border border-orange-200/80 shadow-xl shadow-orange-500/5 relative overflow-hidden">
           
-          {/* Official Bank Account Card (Anti Fraud) */}
-          <div className="lg:col-span-7 bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 text-white rounded-2xl p-7 border border-slate-800 shadow-xl flex flex-col justify-between relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+          {/* Security Alert Header */}
+          <div className="flex items-start sm:items-center gap-3 p-3.5 rounded-2xl bg-orange-50 border border-orange-200/80 text-orange-950 text-xs font-semibold mb-6">
+            <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5 sm:mt-0" />
+            <span>
+              <strong>AVISO DE SEGURIDAD:</strong> ASITEC S.A. nunca solicitará transferencias a personas naturales ni cuentas de terceros ajenos a nuestra razón social.
+            </span>
+          </div>
 
-            <div>
-              {/* Alert Header */}
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-6">
-                <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
-                <span>
-                  <strong>AVISO DE SEGURIDAD:</strong> ASITEC S.A. nunca solicitará transferencias a personas naturales ni cuentas de terceros.
-                </span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3.5">
+              <div className="w-13 h-13 rounded-2xl bg-orange-500/10 border border-orange-400/30 flex items-center justify-center text-orange-600 shadow-sm shrink-0">
+                <CreditCard className="w-7 h-7" />
               </div>
-
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-blue-600/30 border border-blue-400/40 flex items-center justify-center text-blue-300">
-                    <CreditCard className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Canal Único Oficial</span>
-                    <h3 className="text-xl font-bold text-white">{companyInfo.bankSecurity.bankName}</h3>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-bold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Verificado</span>
-                </div>
-              </div>
-
-              {/* Bank Account Data Table */}
-              <div className="space-y-2.5 mt-6 bg-slate-950/60 p-4 rounded-xl border border-slate-800 text-xs">
-                
-                <div className="flex items-center justify-between py-1.5 border-b border-slate-800/80">
-                  <span className="text-slate-400">Titular de la Cuenta:</span>
-                  <span className="font-bold text-white text-sm">{companyInfo.bankSecurity.accountHolder}</span>
-                </div>
-
-                <div className="flex items-center justify-between py-1.5 border-b border-slate-800/80">
-                  <span className="text-slate-400">R.U.T. Empresa:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-white text-sm">{companyInfo.bankSecurity.rut}</span>
-                    <button
-                      onClick={() => copyToClipboard(companyInfo.bankSecurity.rut, 'rut')}
-                      className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                      title="Copiar RUT"
-                    >
-                      {copiedField === 'rut' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between py-1.5 border-b border-slate-800/80">
-                  <span className="text-slate-400">Tipo de Cuenta:</span>
-                  <span className="font-semibold text-slate-200">{companyInfo.bankSecurity.accountType}</span>
-                </div>
-
-                <div className="flex items-center justify-between py-1.5">
-                  <span className="text-slate-400">Número de Cuenta:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-extrabold text-amber-400 text-base">{companyInfo.bankSecurity.accountNumber}</span>
-                    <button
-                      onClick={() => copyToClipboard(companyInfo.bankSecurity.accountNumber, 'cta')}
-                      className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                      title="Copiar Número de Cuenta"
-                    >
-                      {copiedField === 'cta' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-orange-700">Canal Bancario Oficial</span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900">{companyInfo.bankSecurity.bankName}</h3>
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-              <span>{companyInfo.bankSecurity.instruction}</span>
-              <a 
-                href={`mailto:${companyInfo.bankSecurity.paymentEmail}`}
-                className="text-amber-400 hover:underline font-semibold"
-              >
-                {companyInfo.bankSecurity.paymentEmail}
-              </a>
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold shadow-sm">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Cuenta Verificada</span>
+            </div>
+          </div>
+
+          {/* Bank Account Data Table */}
+          <div className="space-y-3 bg-white p-5 rounded-2xl border border-orange-100 shadow-sm text-xs sm:text-sm">
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-100 gap-1">
+              <span className="text-slate-500 font-medium flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-orange-500" />
+                Titular de la Cuenta:
+              </span>
+              <span className="font-bold text-slate-900">{companyInfo.bankSecurity.accountHolder}</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-100 gap-1">
+              <span className="text-slate-500 font-medium">R.U.T. Empresa:</span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-bold text-slate-900">{companyInfo.bankSecurity.rut}</span>
+                <button
+                  onClick={() => copyToClipboard(companyInfo.bankSecurity.rut, 'rut')}
+                  className="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 transition-colors cursor-pointer"
+                  title="Copiar RUT"
+                >
+                  {copiedField === 'rut' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-100 gap-1">
+              <span className="text-slate-500 font-medium">Tipo de Cuenta:</span>
+              <span className="font-semibold text-slate-800">{companyInfo.bankSecurity.accountType}</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 gap-1">
+              <span className="text-slate-500 font-medium">Número de Cuenta:</span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-black text-orange-600 text-base sm:text-lg">{companyInfo.bankSecurity.accountNumber}</span>
+                <button
+                  onClick={() => copyToClipboard(companyInfo.bankSecurity.accountNumber, 'cta')}
+                  className="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 transition-colors cursor-pointer"
+                  title="Copiar Número de Cuenta"
+                >
+                  {copiedField === 'cta' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
             </div>
 
           </div>
 
-          {/* Authorized Regional Distributor Card (Ataelqui) */}
-          <div className="lg:col-span-5 bg-slate-50 rounded-2xl p-7 border border-slate-200 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">
-                  Distribuidor Oficial Autorizado
-                </span>
-                <span className="text-xs text-slate-400 font-medium">3ª y 4ª Región</span>
-              </div>
-
-              <h3 className="text-xl font-bold text-slate-900">
-                {companyInfo.distributor.company}
-              </h3>
-
-              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Distribución exclusiva para las regiones de <strong>Atacama</strong> y <strong>Coquimbo</strong>. Abastecimiento ágil de premezclas de pastelería, levaduras y mejoradores Rapidox con despacho local.
-              </p>
-
-              <div className="mt-6 space-y-3 text-xs text-slate-700">
-                <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center gap-3">
-                  <Phone className="w-4 h-4 text-amber-600 shrink-0" />
-                  <div>
-                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Teléfono de Contacto</span>
-                    <a href={`tel:${companyInfo.distributor.phoneRaw}`} className="font-semibold text-slate-900 hover:text-amber-600">
-                      {companyInfo.distributor.phone}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-amber-600 shrink-0" />
-                  <div>
-                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Correo Electrónico</span>
-                    <a href={`mailto:${companyInfo.distributor.email}`} className="font-semibold text-slate-900 hover:text-amber-600">
-                      {companyInfo.distributor.email}
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-slate-200">
-              <a
-                href={companyInfo.distributor.catalogUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold text-center transition-colors flex items-center justify-center gap-2 shadow-sm"
-              >
-                <span>Ver Catálogo Ataelqui</span>
-                <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-              </a>
-            </div>
-
+          {/* Footer Receipt Confirmation */}
+          <div className="mt-5 pt-4 border-t border-orange-100/80 text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span>{companyInfo.bankSecurity.instruction}</span>
+            <a 
+              href={`mailto:${companyInfo.bankSecurity.paymentEmail}`}
+              className="text-orange-600 hover:text-orange-700 hover:underline font-bold flex items-center gap-1"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              {companyInfo.bankSecurity.paymentEmail}
+            </a>
           </div>
 
         </div>

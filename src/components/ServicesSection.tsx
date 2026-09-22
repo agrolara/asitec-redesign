@@ -24,19 +24,19 @@ export const ServicesSection: React.FC<Props> = ({ onOpenQuote }) => {
   };
 
   return (
-    <section id="servicios" className="py-20 bg-slate-100/70 border-b border-slate-200">
+    <section id="servicios" className="py-20 bg-gradient-to-b from-white via-orange-50/20 to-white border-b border-orange-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-bold text-amber-700 uppercase tracking-widest bg-amber-100/60 px-3 py-1 rounded-full border border-amber-200">
+          <span className="text-xs font-bold text-orange-700 uppercase tracking-widest bg-orange-100/80 px-3.5 py-1 rounded-full border border-orange-200">
             Capacidad Fabril & Maquilas
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-2">
             Servicios Industriales para la Industria Alimentaria
           </h2>
           <p className="text-sm text-slate-600 mt-2">
-            Ponemos a disposición de su empresa nuestra planta productiva en Maipú, certificaciones sanitarias y líneas automatizadas de procesamiento y envasado.
+            Ponemos a disposición de su empresa nuestra planta productiva en Maipú, certificación internacional FSSC 22000 y líneas automatizadas de procesamiento y envasado.
           </p>
         </div>
 
@@ -48,13 +48,13 @@ export const ServicesSection: React.FC<Props> = ({ onOpenQuote }) => {
             return (
               <div
                 key={srv.id}
-                className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                className="bg-white p-6 rounded-2xl border-2 border-orange-100 shadow-sm hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center mb-5 shadow-sm">
+                  <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center mb-5 shadow-sm group-hover:scale-105 transition-transform">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 mb-2">
+                  <h3 className="text-base font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition-colors">
                     {srv.title}
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
@@ -62,13 +62,13 @@ export const ServicesSection: React.FC<Props> = ({ onOpenQuote }) => {
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+                <div className="mt-6 pt-4 border-t border-orange-100 flex items-center justify-between text-xs text-slate-500 font-medium">
                   <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Estándar HACCP
+                    <CheckCircle2 className="w-3.5 h-3.5" /> FSSC 22000
                   </span>
                   <button
                     onClick={onOpenQuote}
-                    className="text-amber-600 hover:text-amber-700 font-bold flex items-center gap-1"
+                    className="text-orange-600 hover:text-orange-700 font-bold flex items-center gap-1 cursor-pointer"
                   >
                     <span>Cotizar</span>
                     <ArrowRight className="w-3 h-3" />
@@ -80,20 +80,20 @@ export const ServicesSection: React.FC<Props> = ({ onOpenQuote }) => {
         </div>
 
         {/* Industrial Banner */}
-        <div className="mt-12 p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-amber-950 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+        <div className="mt-12 p-8 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-orange-500/10">
           <div className="space-y-2 text-center md:text-left">
             <h3 className="text-xl font-bold text-white">
               ¿Necesitas una formulación exclusiva o maquila personalizada?
             </h3>
-            <p className="text-xs text-slate-300 max-w-2xl">
+            <p className="text-xs text-orange-50 max-w-2xl leading-relaxed">
               Desarrollamos premezclas a medida para optimizar el costo por kilo, color, tolerancia fermentativa y vida útil en anaquel de tus líneas de panificación y pastelería.
             </p>
           </div>
           <a
             href="mailto:info@asitec.cl?subject=Solicitud%20de%20Formulaci%C3%B3n%20Exclusiva%20o%20Maquila%20-%20Ingenier%C3%ADa%20de%20Procesos%20ASITEC&body=Estimado%20Equipo%20de%20Ingenier%C3%ADa%20de%20Procesos%20de%20ASITEC%20S.A.%2C%0A%0AMe%20gustar%C3%ADa%20solicitar%20informaci%C3%B3n%20y%20asesor%C3%ADa%20t%C3%A9cnica%20para%20un%20desarrollo%20personalizado%20%2F%20maquila%3A%0A%0A-%20Empresa%20o%20Raz%C3%B3n%20Social%3A%20%0A-%20Tipo%20de%20producto%20o%20formulaci%C3%B3n%20requerida%3A%20%0A-%20Volumen%20mensual%20estimado%3A%20%0A-%20Tel%C3%A9fono%20de%20contacto%3A%20%0A-%20Ciudad%20o%20Regi%C3%B3n%3A%20%0A%0ASaludos%20cordiales."
-            className="px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs tracking-wide shadow-md transition-all shrink-0 active:scale-95 flex items-center gap-2"
+            className="px-6 py-3.5 rounded-xl bg-white hover:bg-orange-50 text-orange-950 font-bold text-xs tracking-wide shadow-md transition-all shrink-0 active:scale-95 flex items-center gap-2"
           >
-            <Mail className="w-4 h-4 text-slate-950" />
+            <Mail className="w-4 h-4 text-orange-600" />
             <span>Contactar a Ingeniería de Procesos</span>
           </a>
         </div>

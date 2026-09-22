@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="space-y-1 text-center lg:text-left">
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-orange-400 uppercase tracking-wider">
                 Documentación Técnica & Catálogos Oficiales
               </span>
               <h3 className="text-xl font-bold text-white">
@@ -44,7 +44,7 @@ export const Footer: React.FC = () => {
                   rel="noopener noreferrer"
                   className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-semibold flex items-center gap-2 transition-colors shadow-sm"
                 >
-                  <FileText className="w-4 h-4 text-amber-400" />
+                  <FileText className="w-4 h-4 text-orange-400" />
                   <span>{cat.name}</span>
                   <Download className="w-3.5 h-3.5 text-slate-400 ml-1" />
                 </a>
@@ -62,20 +62,20 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
               <span className="text-2xl font-black tracking-tight text-white font-sans">
-                ASITEC<span className="text-amber-500">.</span>
+                ASITEC<span className="text-orange-500">.</span>
               </span>
-              <span className="text-[10px] bg-amber-500/20 text-amber-400 font-bold px-2 py-0.5 rounded border border-amber-500/30">
+              <span className="text-[10px] bg-orange-500/20 text-orange-400 font-bold px-2 py-0.5 rounded border border-orange-500/30">
                 S.A.
               </span>
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              Empresa chilena dedicada a la innovación, desarrollo y comercialización de materias primas para la alimentación, mejoradores de panificación y servicio de laboratorio certificado para la industria molinera.
+              Empresa chilena dedicada a la innovación, desarrollo y comercialización de materias primas para la alimentación, mejoradores de panificación y servicio de laboratorio para la industria molinera.
             </p>
 
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <Award className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>Resolución Exenta Nº 6805 / 2016 del SAG</span>
+            <div className="flex items-center gap-2 text-xs text-slate-300 font-medium">
+              <Award className="w-4 h-4 text-orange-400 shrink-0" />
+              <span>Certificación Internacional FSSC 22000 (GFSI)</span>
             </div>
           </div>
 
@@ -83,11 +83,11 @@ export const Footer: React.FC = () => {
           <div className="space-y-3 text-xs">
             <h4 className="font-bold text-white uppercase tracking-wider text-xs">Navegación</h4>
             <ul className="space-y-2 text-slate-400">
-              <li><a href="#catalogo" className="hover:text-amber-400 transition-colors">Catálogo de Productos</a></li>
-              <li><a href="#certificaciones" className="hover:text-amber-400 transition-colors">Acreditaciones & Certificaciones</a></li>
-              <li><a href="#recetario" className="hover:text-amber-400 transition-colors">Recetas & Videos</a></li>
-              <li><a href="#servicios" className="hover:text-amber-400 transition-colors">Servicios Industriales</a></li>
-              <li><a href="#seguridad" className="hover:text-amber-400 transition-colors">Canal de Pago Banco de Chile</a></li>
+              <li><a href="#catalogo" className="hover:text-orange-400 transition-colors">Catálogo de Productos</a></li>
+              <li><a href="#certificaciones" className="hover:text-orange-400 transition-colors">Acreditaciones & Certificaciones</a></li>
+              <li><a href="#recetario" className="hover:text-orange-400 transition-colors">Recetas & Videos</a></li>
+              <li><a href="#servicios" className="hover:text-orange-400 transition-colors">Servicios Industriales</a></li>
+              <li><a href="#seguridad" className="hover:text-orange-400 transition-colors">Canal de Pago Banco de Chile</a></li>
             </ul>
           </div>
 
@@ -98,7 +98,7 @@ export const Footer: React.FC = () => {
               <li>Pastelería (Bases y Premezclas)</li>
               <li>Mejoradores Rapidox</li>
               <li>Levadura Instantánea Up Bakery</li>
-              <li>Mix Vitamínico & Enzimas SAG</li>
+              <li>Mix Vitamínico & Enzimas para Harinas</li>
             </ul>
           </div>
 
@@ -107,15 +107,15 @@ export const Footer: React.FC = () => {
             <h4 className="font-bold text-white uppercase tracking-wider text-xs">Contacto Directo</h4>
             <ul className="space-y-2 text-slate-400">
               <li className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <Phone className="w-3.5 h-3.5 text-orange-400 shrink-0" />
                 <span>22 616 0200</span>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <Mail className="w-3.5 h-3.5 text-orange-400 shrink-0" />
                 <span>info@asitec.cl</span>
               </li>
               <li className="flex items-start gap-2">
-                <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0 mt-0.5" />
                 <span>Chañarcillo #691, Maipú</span>
               </li>
             </ul>
@@ -132,7 +132,7 @@ export const Footer: React.FC = () => {
           <div className="flex items-center gap-4">
             <a
               href="#admin"
-              className="inline-flex items-center gap-1.5 text-slate-500 hover:text-amber-400 transition-colors"
+              className="inline-flex items-center gap-1.5 text-slate-500 hover:text-orange-400 transition-colors"
             >
               <Lock className="w-3.5 h-3.5" />
               <span>Acceso Administración</span>
@@ -140,8 +140,7 @@ export const Footer: React.FC = () => {
             <span className="text-slate-800">|</span>
             <button
               onClick={scrollToTop}
-              className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors border border-slate-800 flex items-center gap-1.5"
-              title="Volver arriba"
+              className="inline-flex items-center gap-1 text-slate-400 hover:text-orange-400 transition-colors cursor-pointer"
             >
               <span>Subir</span>
               <ArrowUp className="w-3.5 h-3.5" />

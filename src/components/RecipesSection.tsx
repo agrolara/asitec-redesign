@@ -32,13 +32,13 @@ export const RecipesSection: React.FC<Props> = ({
   };
 
   return (
-    <section id="recetario" className="py-20 bg-white border-b border-slate-200">
+    <section id="recetario" className="py-20 bg-white border-b border-orange-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <span className="text-xs font-bold text-amber-700 uppercase tracking-widest bg-amber-100/60 px-3 py-1 rounded-full border border-amber-200">
+            <span className="text-xs font-bold text-orange-700 uppercase tracking-widest bg-orange-100/80 px-3.5 py-1 rounded-full border border-orange-200">
               Academia Culinaria & Talleres
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-2">
@@ -49,7 +49,7 @@ export const RecipesSection: React.FC<Props> = ({
             </p>
           </div>
 
-          <div className="text-xs text-slate-500 font-medium bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl">
+          <div className="text-xs text-orange-900 font-medium bg-orange-50/70 border border-orange-200 px-4 py-2 rounded-xl">
             💡 Videos demostrativos oficiales de Asitec S.A.
           </div>
         </div>
@@ -60,7 +60,7 @@ export const RecipesSection: React.FC<Props> = ({
             <div
               key={recipe.id}
               onClick={() => setSelectedRecipe(recipe)}
-              className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer flex flex-col justify-between"
+              className="bg-white rounded-2xl border-2 border-orange-100 overflow-hidden hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1 transition-all duration-300 group cursor-pointer flex flex-col justify-between"
             >
               <div>
                 {/* Video con primer frame original */}
@@ -76,17 +76,17 @@ export const RecipesSection: React.FC<Props> = ({
 
                   {/* Play Button Icon */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-12 h-12 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-amber-400 transition-all">
-                      <Play className="w-5 h-5 fill-slate-950 ml-0.5" />
+                    <div className="w-12 h-12 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-orange-600 transition-all">
+                      <Play className="w-5 h-5 fill-white ml-0.5" />
                     </div>
                   </div>
 
                   {/* Badges */}
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs pointer-events-none">
                     <span className="bg-slate-950/80 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-md font-semibold flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-amber-400" /> {recipe.duration}
+                      <Clock className="w-3 h-3 text-orange-400" /> {recipe.duration}
                     </span>
-                    <span className="bg-amber-500/90 text-slate-950 font-bold px-2 py-0.5 rounded-md">
+                    <span className="bg-orange-500 text-white font-bold px-2 py-0.5 rounded-md">
                       {recipe.difficulty}
                     </span>
                   </div>
@@ -94,10 +94,10 @@ export const RecipesSection: React.FC<Props> = ({
 
                 {/* Content */}
                 <div className="p-5 space-y-2">
-                  <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">
+                  <div className="text-[11px] font-bold text-orange-700 uppercase tracking-wide">
                     {recipe.category}
                   </div>
-                  <h3 className="font-bold text-slate-900 text-base group-hover:text-amber-600 transition-colors">
+                  <h3 className="font-bold text-slate-900 text-base group-hover:text-orange-600 transition-colors">
                     {recipe.title}
                   </h3>
                   <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
@@ -108,11 +108,11 @@ export const RecipesSection: React.FC<Props> = ({
 
               {/* Recommended Product Footer */}
               <div className="p-5 pt-0">
-                <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+                <div className="pt-3 border-t border-orange-100 flex items-center justify-between text-xs text-slate-500">
                   <span className="font-semibold text-slate-800 truncate">
                     ⭐ {recipe.recommendedProduct}
                   </span>
-                  <span className="text-amber-600 font-bold flex items-center gap-0.5 shrink-0">
+                  <span className="text-orange-600 font-bold flex items-center gap-0.5 shrink-0">
                     Ver video <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
@@ -136,15 +136,15 @@ export const RecipesSection: React.FC<Props> = ({
           >
             
             {/* Header - Pinned */}
-            <div className="shrink-0 px-5 py-3 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-400">
-                <ChefHat className="w-4 h-4 shrink-0" />
+            <div className="shrink-0 px-5 py-3.5 bg-orange-500 text-white flex items-center justify-between border-b border-orange-600">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white">
+                <ChefHat className="w-4 h-4 shrink-0 text-white" />
                 <span className="truncate">Masterclass &bull; {selectedRecipe.title}</span>
               </div>
               <button 
                 type="button"
                 onClick={() => setSelectedRecipe(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-orange-100 hover:text-white hover:bg-orange-600 transition-colors cursor-pointer"
                 title="Cerrar"
               >
                 <X className="w-5 h-5" />
@@ -180,7 +180,7 @@ export const RecipesSection: React.FC<Props> = ({
                     <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
                       ⏱ {selectedRecipe.duration}
                     </span>
-                    <span className="text-[11px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">
+                    <span className="text-[11px] font-bold text-orange-800 bg-orange-100 px-2.5 py-0.5 rounded-full">
                       Nivel: {selectedRecipe.difficulty}
                     </span>
                   </div>
@@ -197,7 +197,7 @@ export const RecipesSection: React.FC<Props> = ({
                     <div className="space-y-1.5 max-h-[22vh] md:max-h-[28vh] overflow-y-auto pr-1">
                       {selectedRecipe.keySteps.map((step, idx) => (
                         <div key={idx} className="flex items-start gap-2 text-xs text-slate-600">
-                          <span className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="w-4 h-4 rounded-full bg-orange-100 text-orange-800 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
                             {idx + 1}
                           </span>
                           <span className="leading-snug">{step}</span>
@@ -218,9 +218,9 @@ export const RecipesSection: React.FC<Props> = ({
                       handleAddIngredient(selectedRecipe);
                       setSelectedRecipe(null);
                     }}
-                    className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm active:scale-95 shrink-0"
+                    className="px-3.5 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm active:scale-95 shrink-0"
                   >
-                    <ShoppingCart className="w-3.5 h-3.5 text-amber-400" />
+                    <ShoppingCart className="w-3.5 h-3.5 text-white" />
                     <span>Cotizar Insumo</span>
                   </button>
                 </div>

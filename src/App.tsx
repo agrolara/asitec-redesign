@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
-import { CategoryNav } from './components/CategoryNav';
 import { CatalogSection } from './components/CatalogSection';
 import { CertificationsSection } from './components/CertificationsSection';
 import { RecipesSection } from './components/RecipesSection';
@@ -203,11 +202,6 @@ export const App: React.FC = () => {
       <main className="flex-1">
         <HeroSection
           onExploreCatalog={handleExploreCatalog}
-        />
-
-        <CategoryNav
-          selectedCategory={selectedCategory}
-          onSelectCategory={(cat) => setSelectedCategory(cat)}
         />
 
         <CatalogSection
