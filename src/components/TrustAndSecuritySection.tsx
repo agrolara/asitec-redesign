@@ -10,8 +10,19 @@ import {
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
-export const TrustAndSecuritySection: React.FC = () => {
+interface TrustAndSecuritySectionProps {
+  settings?: Record<string, string>;
+}
+
+export const TrustAndSecuritySection: React.FC<TrustAndSecuritySectionProps> = ({ settings }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const bankName = settings?.bank_name || companyInfo.bankSecurity.bankName;
+  const accountHolder = settings?.bank_account_holder || companyInfo.bankSecurity.accountHolder;
+  const rut = settings?.bank_rut || companyInfo.bankSecurity.rut;
+  const accountType = settings?.bank_account_type || companyInfo.bankSecurity.accountType;
+  const accountNumber = settings?.bank_account_number || companyInfo.bankSecurity.accountNumber;
+  const paymentEmail = settings?.bank_payment_email || companyInfo.bankSecurity.paymentEmail;
 
   const copyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
@@ -53,7 +64,7 @@ export const TrustAndSecuritySection: React.FC = () => {
               ASITEC S.A. nunca solicitará transferencias a personas naturales ni cuentas de terceros ajenos a nuestra razón social.
             </p>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-              Todos los pagos de facturas deben emitirse única y exclusivamente a nombre de <strong>ASITEC S.A.</strong> en nuestra cuenta corriente oficial verificada de <strong>Banco de Chile</strong> que se detalla a continuación.
+              Todos los pagos de facturas deben emitirse única y exclusivamente a nombre de <strong>ASITEC S.A.</strong> en nuestra cuenta corriente oficial verificada de <strong>{bankName}</strong> que se detalla a continuación.
             </p>
           </div>
         </div>
@@ -68,7 +79,7 @@ export const TrustAndSecuritySection: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-orange-700">Canal Bancario Oficial</span>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900">{companyInfo.bankSecurity.bankName}</h3>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900">{bankName}</h3>
               </div>
             </div>
 
@@ -86,15 +97,15 @@ export const TrustAndSecuritySection: React.FC = () => {
                 <Building2 className="w-4 h-4 text-orange-500" />
                 Titular de la Cuenta:
               </span>
-              <span className="font-bold text-slate-900">{companyInfo.bankSecurity.accountHolder}</span>
+              <span className="font-bold text-slate-900">{accountHolder}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-100 gap-1">
               <span className="text-slate-500 font-medium">R.U.T. Empresa:</span>
               <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-slate-900">{companyInfo.bankSecurity.rut}</span>
+                <span className="font-mono font-bold text-slate-900">{rut}</span>
                 <button
-                  onClick={() => copyToClipboard(companyInfo.bankSecurity.rut, 'rut')}
+                  onClick={() => copyToClipboard(rut, 'rut')}
                   className="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 transition-colors cursor-pointer"
                   title="Copiar RUT"
                 >
@@ -105,15 +116,15 @@ export const TrustAndSecuritySection: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-100 gap-1">
               <span className="text-slate-500 font-medium">Tipo de Cuenta:</span>
-              <span className="font-semibold text-slate-800">{companyInfo.bankSecurity.accountType}</span>
+              <span className="font-semibold text-slate-800">{accountType}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 gap-1">
               <span className="text-slate-500 font-medium">Número de Cuenta:</span>
               <div className="flex items-center gap-2">
-                <span className="font-mono font-black text-orange-600 text-base sm:text-lg">{companyInfo.bankSecurity.accountNumber}</span>
+                <span className="font-mono font-black text-orange-600 text-base sm:text-lg">{accountNumber}</span>
                 <button
-                  onClick={() => copyToClipboard(companyInfo.bankSecurity.accountNumber, 'cta')}
+                  onClick={() => copyToClipboard(accountNumber, 'cta')}
                   className="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 transition-colors cursor-pointer"
                   title="Copiar Número de Cuenta"
                 >
@@ -128,11 +139,11 @@ export const TrustAndSecuritySection: React.FC = () => {
           <div className="mt-5 pt-4 border-t border-orange-100/80 text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <span>{companyInfo.bankSecurity.instruction}</span>
             <a 
-              href={`mailto:${companyInfo.bankSecurity.paymentEmail}`}
+              href={`mailto:${paymentEmail}`}
               className="text-orange-600 hover:text-orange-700 hover:underline font-bold flex items-center gap-1"
             >
               <Mail className="w-3.5 h-3.5" />
-              {companyInfo.bankSecurity.paymentEmail}
+              {paymentEmail}
             </a>
           </div>
 

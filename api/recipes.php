@@ -11,30 +11,83 @@ require_once __DIR__ . '/config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = getDbConnection();
+$dataFile = __DIR__ . '/data_recipes.json';
 
 function formatRecipe(array $row): array {
     $steps = [];
     if (!empty($row['key_steps'])) {
-        $decoded = json_decode($row['key_steps'], true);
+        $decoded = is_string($row['key_steps']) ? json_decode($row['key_steps'], true) : $row['key_steps'];
         if (is_array($decoded)) $steps = $decoded;
+    } else if (!empty($row['keySteps']) && is_array($row['keySteps'])) {
+        $steps = $row['keySteps'];
     }
 
     return [
-        'id'                 => $row['id'],
-        'title'              => $row['title'],
-        'category'           => $row['category'],
-        'duration'           => $row['duration'],
-        'difficulty'         => $row['difficulty'],
-        'videoUrl'           => $row['video_url'],
-        'thumbnail'          => $row['thumbnail'],
-        'description'        => $row['description'],
-        'recommendedProduct' => $row['recommended_product'],
+        'id'                 => $row['id'] ?? '',
+        'title'              => $row['title'] ?? '',
+        'category'           => $row['category'] ?? 'Pastelería',
+        'duration'           => $row['duration'] ?? '30 min',
+        'difficulty'         => $row['difficulty'] ?? 'Fácil',
+        'videoUrl'           => $row['video_url'] ?? ($row['videoUrl'] ?? ''),
+        'thumbnail'          => $row['thumbnail'] ?? '',
+        'description'        => $row['description'] ?? '',
+        'recommendedProduct' => $row['recommended_product'] ?? ($row['recommendedProduct'] ?? ''),
         'keySteps'           => $steps
     ];
 }
 
 // -------------------------------------------------------------
-// 1. GET: Listar todas las recetas o por ID
+// MANEJO OFFLINE / SIN BASE DE DATOS INICIALIZADA
+// -------------------------------------------------------------
+if (!$pdo) {
+    $recipes = [];
+    if (file_exists($dataFile)) {
+        $json = @file_get_contents($dataFile);
+        if ($json) $recipes = json_decode($json, true) ?: [];
+    }
+
+    if ($method === 'GET') {
+        jsonResponse(['success' => true, 'recipes' => array_map('formatRecipe', $recipes)]);
+    }
+
+    $user = requireAuth();
+    $input = getJsonInput();
+
+    if ($method === 'POST') {
+        $id = $input['id'] ?? ('rec-' . time());
+        $newRec = formatRecipe(array_merge($input, ['id' => $id]));
+        $recipes[] = $newRec;
+        @file_put_contents($dataFile, json_encode($recipes, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        jsonResponse(['success' => true, 'recipe' => $newRec], 201);
+    }
+
+    if ($method === 'PUT') {
+        $id = $input['id'] ?? ($_GET['id'] ?? '');
+        $found = false;
+        foreach ($recipes as $i => $r) {
+            if ($r['id'] === $id) {
+                $recipes[$i] = formatRecipe(array_merge($r, $input));
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) $recipes[] = formatRecipe(array_merge($input, ['id' => $id]));
+        @file_put_contents($dataFile, json_encode($recipes, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        jsonResponse(['success' => true, 'recipe' => formatRecipe(array_merge($input, ['id' => $id]))]);
+    }
+
+    if ($method === 'DELETE') {
+        $id = $_GET['id'] ?? ($input['id'] ?? '');
+        $recipes = array_values(array_filter($recipes, fn($r) => $r['id'] !== $id));
+        @file_put_contents($dataFile, json_encode($recipes, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        jsonResponse(['success' => true, 'message' => 'Receta eliminada.']);
+    }
+
+    jsonResponse(['success' => false, 'error' => 'Método no soportado.'], 405);
+}
+
+// -------------------------------------------------------------
+// MANEJO CON MYSQL ACTIVO
 // -------------------------------------------------------------
 if ($method === 'GET') {
     if (isset($_GET['id'])) {
@@ -53,25 +106,19 @@ if ($method === 'GET') {
     jsonResponse(['success' => true, 'recipes' => $recipes]);
 }
 
-// -------------------------------------------------------------
-// OPERACIONES PROTEGIDAS (POST, PUT, DELETE)
-// -------------------------------------------------------------
 $user = requireAuth();
 $input = getJsonInput();
 
-// -------------------------------------------------------------
-// 2. POST: Crear Receta
-// -------------------------------------------------------------
 if ($method === 'POST') {
     $title = trim($input['title'] ?? '');
     $category = trim($input['category'] ?? 'Pastelería');
-    $duration = trim($input['duration'] ?? '15 min');
+    $duration = trim($input['duration'] ?? '30 min');
     $difficulty = trim($input['difficulty'] ?? 'Fácil');
     $videoUrl = trim($input['videoUrl'] ?? '');
     $thumbnail = trim($input['thumbnail'] ?? '');
     $description = trim($input['description'] ?? '');
     $recommendedProduct = trim($input['recommendedProduct'] ?? '');
-    $keySteps = is_array($input['keySteps'] ?? null) ? json_encode($input['keySteps'], JSON_UNESCAPED_UNICODE) : '[]';
+    $keySteps = isset($input['keySteps']) && is_array($input['keySteps']) ? json_encode($input['keySteps'], JSON_UNESCAPED_UNICODE) : '[]';
 
     if (empty($title)) {
         jsonResponse(['success' => false, 'error' => 'El título de la receta es obligatorio.'], 400);
@@ -80,7 +127,7 @@ if ($method === 'POST') {
     $id = trim($input['id'] ?? '');
     if (empty($id)) {
         $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $title));
-        $id = substr($slug, 0, 50) . '-' . rand(100, 999);
+        $id = substr($slug, 0, 40) . '-' . rand(100, 999);
     }
 
     $stmt = $pdo->prepare("
@@ -102,18 +149,15 @@ if ($method === 'POST') {
             'thumbnail' => $thumbnail,
             'description' => $description,
             'recommendedProduct' => $recommendedProduct,
-            'keySteps' => json_decode($keySteps, true)
+            'keySteps' => isset($input['keySteps']) ? $input['keySteps'] : []
         ]
     ], 201);
 }
 
-// -------------------------------------------------------------
-// 3. PUT: Actualizar Receta
-// -------------------------------------------------------------
 if ($method === 'PUT') {
     $id = trim($input['id'] ?? ($_GET['id'] ?? ''));
     if (empty($id)) {
-        jsonResponse(['success' => false, 'error' => 'ID de receta no proporcionado.'], 400);
+        jsonResponse(['success' => false, 'error' => 'ID no proporcionado.'], 400);
     }
 
     $stmt = $pdo->prepare("SELECT * FROM recipes WHERE id = ? LIMIT 1");
@@ -131,9 +175,7 @@ if ($method === 'PUT') {
     $thumbnail = isset($input['thumbnail']) ? trim($input['thumbnail']) : $current['thumbnail'];
     $description = isset($input['description']) ? trim($input['description']) : $current['description'];
     $recommendedProduct = isset($input['recommendedProduct']) ? trim($input['recommendedProduct']) : $current['recommended_product'];
-    $keySteps = isset($input['keySteps']) && is_array($input['keySteps'])
-        ? json_encode($input['keySteps'], JSON_UNESCAPED_UNICODE)
-        : $current['key_steps'];
+    $keySteps = isset($input['keySteps']) && is_array($input['keySteps']) ? json_encode($input['keySteps'], JSON_UNESCAPED_UNICODE) : $current['key_steps'];
 
     $upd = $pdo->prepare("
         UPDATE recipes 
@@ -155,18 +197,15 @@ if ($method === 'PUT') {
             'thumbnail' => $thumbnail,
             'description' => $description,
             'recommendedProduct' => $recommendedProduct,
-            'keySteps' => json_decode($keySteps, true)
+            'keySteps' => isset($input['keySteps']) ? $input['keySteps'] : json_decode($keySteps, true)
         ]
     ]);
 }
 
-// -------------------------------------------------------------
-// 4. DELETE: Eliminar Receta
-// -------------------------------------------------------------
 if ($method === 'DELETE') {
     $id = trim($_GET['id'] ?? ($input['id'] ?? ''));
     if (empty($id)) {
-        jsonResponse(['success' => false, 'error' => 'ID de receta no proporcionado.'], 400);
+        jsonResponse(['success' => false, 'error' => 'ID no proporcionado.'], 400);
     }
 
     $del = $pdo->prepare("DELETE FROM recipes WHERE id = ?");

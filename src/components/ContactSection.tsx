@@ -10,7 +10,19 @@ import {
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
-export const ContactSection: React.FC = () => {
+interface ContactSectionProps {
+  settings?: Record<string, string>;
+}
+
+export const ContactSection: React.FC<ContactSectionProps> = ({ settings }) => {
+  const companyName = settings?.company_name || companyInfo.name;
+  const address = settings?.contact_address || companyInfo.contact.address;
+  const phone = settings?.contact_phone || companyInfo.contact.phone;
+  const phoneRaw = settings?.contact_phone_raw || (settings?.contact_phone ? settings.contact_phone.replace(/\s+/g, '') : companyInfo.contact.phoneRaw);
+  const email = settings?.contact_email || companyInfo.contact.email;
+  const workingHours = settings?.contact_working_hours || companyInfo.contact.workingHours;
+  const mapsUrl = settings?.contact_maps_url || companyInfo.contact.googleMapsUrl;
+
   return (
     <section id="contacto" className="py-20 bg-gradient-to-b from-white via-orange-50/20 to-white border-b border-orange-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,7 +50,7 @@ export const ContactSection: React.FC = () => {
                   <Building2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900">{companyInfo.name}</h3>
+                  <h3 className="text-xl font-bold text-slate-900">{companyName}</h3>
                   <p className="text-xs text-slate-500 font-medium">Casa Matriz & Planta Industrial Maipú</p>
                 </div>
               </div>
@@ -51,9 +63,9 @@ export const ContactSection: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-xs font-bold text-slate-400 block uppercase">Dirección</span>
-                    <p className="font-semibold text-slate-900">{companyInfo.contact.address}</p>
+                    <p className="font-semibold text-slate-900">{address}</p>
                     <a
-                      href={companyInfo.contact.googleMapsUrl}
+                      href={mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-orange-600 hover:underline font-semibold flex items-center gap-1 mt-0.5"
@@ -71,10 +83,10 @@ export const ContactSection: React.FC = () => {
                   <div>
                     <span className="text-xs font-bold text-slate-400 block uppercase">Central Telefónica</span>
                     <a 
-                      href={`tel:${companyInfo.contact.phoneRaw}`}
+                      href={`tel:${phoneRaw}`}
                       className="font-bold text-slate-900 hover:text-orange-600 text-base"
                     >
-                      {companyInfo.contact.phone}
+                      {phone}
                     </a>
                   </div>
                 </div>
@@ -86,10 +98,10 @@ export const ContactSection: React.FC = () => {
                   <div>
                     <span className="text-xs font-bold text-slate-400 block uppercase">Correo Electrónico</span>
                     <a 
-                      href={`mailto:${companyInfo.contact.email}`}
+                      href={`mailto:${email}`}
                       className="font-semibold text-slate-900 hover:text-orange-600"
                     >
-                      {companyInfo.contact.email}
+                      {email}
                     </a>
                   </div>
                 </div>
@@ -100,7 +112,7 @@ export const ContactSection: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-xs font-bold text-slate-400 block uppercase">Horario de Operación</span>
-                    <p className="font-semibold text-slate-900">{companyInfo.contact.workingHours}</p>
+                    <p className="font-semibold text-slate-900">{workingHours}</p>
                   </div>
                 </div>
 
@@ -131,7 +143,7 @@ export const ContactSection: React.FC = () => {
                 Planta Productiva & Laboratorio de Calidad
               </span>
               <h4 className="text-xl font-bold text-white">
-                Chañarcillo #691, Maipú, Región Metropolitana
+                {address}
               </h4>
               <p className="text-xs text-slate-300">
                 Despacho logístico a molinos y distribuidores en todas las regiones de Chile.

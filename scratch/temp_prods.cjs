@@ -1,6 +1,6 @@
-import type { Product } from '../types';
 
-export const products: Product[] = [
+
+module.exports = [
   {
     "id": "pasteler-a-1",
     "name": "Crema Pastelera",
@@ -62,7 +62,7 @@ export const products: Product[] = [
     "format": "Caja de 20 dosis de 400 g",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-1.jpg",
+    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-lúcuma-1.jpg",
     "sourceUrl": "https://www.asitec.cl/bases-para-preparar/",
     "popular": false
   },
@@ -179,7 +179,7 @@ export const products: Product[] = [
     "format": "Caja de 10 dosis de 1 Kg Saco 10 Kg Saco 25 Kg",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_vainilla.jpg",
+    "image": "https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_plátano.jpg",
     "sourceUrl": "https://www.asitec.cl/premezclas-queques/",
     "popular": false
   },
@@ -283,7 +283,7 @@ export const products: Product[] = [
     "format": "",
     "shelfLife": "",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/premezclas-para-panaderia-rapidox/",
     "popular": true
   },
@@ -296,7 +296,7 @@ export const products: Product[] = [
     "format": "Sacos de 25 Kg",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/premezclas-para-panaderia-rapidox/",
     "popular": true
   },
@@ -309,7 +309,7 @@ export const products: Product[] = [
     "format": "Sacos de 25 Kg",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/premezclas-para-panaderia-rapidox/",
     "popular": false
   },
@@ -322,7 +322,7 @@ export const products: Product[] = [
     "format": "Sacos de 25 Kg",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/premezclas-para-panaderia-rapidox/",
     "popular": false
   },
@@ -335,7 +335,7 @@ export const products: Product[] = [
     "format": "Sacos de 25 Kg",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/premezclas-para-panaderia-rapidox/",
     "popular": false
   },
@@ -348,7 +348,7 @@ export const products: Product[] = [
     "format": "Sacos de 25 Kg",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/premezclas-para-panaderia-rapidox/",
     "popular": true
   },
@@ -361,7 +361,7 @@ export const products: Product[] = [
     "format": "",
     "shelfLife": "",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/mejoradores-nucleos-y-bases-para-panaderia-rapidox/",
     "popular": false
   },
@@ -439,7 +439,7 @@ export const products: Product[] = [
     "format": "Saco 10 Kg.",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/mejoradores-nucleos-y-bases-para-panaderia-rapidox/",
     "popular": false
   },
@@ -452,7 +452,7 @@ export const products: Product[] = [
     "format": "Saco 10 Kg.",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/mejoradores-nucleos-y-bases-para-panaderia-rapidox/",
     "popular": false
   },
@@ -491,7 +491,7 @@ export const products: Product[] = [
     "format": "Saco 25 Kg.",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/insumos-para-molinos-rapidox/",
     "popular": true
   },
@@ -504,7 +504,7 @@ export const products: Product[] = [
     "format": "Saco 25 Kg.",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Chile",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/insumos-para-molinos-rapidox/",
     "popular": false
   },
@@ -517,7 +517,7 @@ export const products: Product[] = [
     "format": "Saco 25 Kg.",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "Corea",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/insumos-para-molinos-rapidox/",
     "popular": true
   },
@@ -530,7 +530,7 @@ export const products: Product[] = [
     "format": "Caja 25 Kg.",
     "shelfLife": "24 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "China",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/insumos-para-molinos-rapidox/",
     "popular": false
   },
@@ -543,7 +543,7 @@ export const products: Product[] = [
     "format": "Saco 25 Kg.",
     "shelfLife": "24 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado.",
     "country": "China",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/insumos-para-molinos-rapidox/",
     "popular": false
   },
@@ -556,7 +556,7 @@ export const products: Product[] = [
     "format": "Saco 25 Kg.",
     "shelfLife": "12 meses a partir de la fecha de elaboración. Conservar en un lugar fresco, seco, limpio y envase cerrado. ÁCIDO ASCÓRBICO",
     "country": "Corea",
-    "image": "https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png",
+    "image": "",
     "sourceUrl": "https://www.asitec.cl/productos-molineria-importados/",
     "popular": false
   }

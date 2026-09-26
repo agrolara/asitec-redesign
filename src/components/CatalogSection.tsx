@@ -255,9 +255,12 @@ export const CatalogSection: React.FC<Props> = ({
                     <div>
                       <div className="h-44 rounded-xl bg-orange-50/30 mb-3 flex items-center justify-center overflow-hidden p-2">
                         <img 
-                          src={product.image} 
+                          src={product.image || 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'} 
                           alt={product.name} 
                           className="max-h-36 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
+                          }}
                         />
                       </div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-orange-700 bg-orange-100/60 px-2 py-0.5 rounded-full">
@@ -327,10 +330,13 @@ export const CatalogSection: React.FC<Props> = ({
                     {/* Mini Image Carousel Inside Card */}
                     <div className="relative h-48 rounded-2xl bg-white border border-orange-100 overflow-hidden mb-5 p-3 flex items-center justify-center shadow-inner group/img select-none">
                       <img
-                        src={currentImg}
+                        src={currentImg || 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'}
                         alt={pkg.title}
                         className="max-h-36 w-auto object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-md"
                         loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
+                        }}
                       />
 
                       {/* Carousel controls if more than 1 image */}
@@ -483,10 +489,13 @@ export const CatalogSection: React.FC<Props> = ({
                         {/* Image */}
                         <div className="h-40 rounded-xl bg-gradient-to-b from-orange-50/30 to-white flex items-center justify-center p-2 mb-3 border border-orange-50 overflow-hidden">
                           <img
-                            src={prod.image}
+                            src={prod.image || 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'}
                             alt={prod.name}
                             className="max-h-32 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm"
                             loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
+                            }}
                           />
                         </div>
 

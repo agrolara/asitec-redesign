@@ -12,11 +12,16 @@ import { companyInfo } from '../data/company';
 interface Props {
   quoteCount: number;
   onOpenQuote: () => void;
+  settings?: Record<string, string>;
 }
 
-export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote }) => {
+export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote, settings }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const address = settings?.contact_address || companyInfo.contact.address;
+  const phone = settings?.contact_phone || companyInfo.contact.phone;
+  const phoneRaw = settings?.contact_phone_raw || (settings?.contact_phone ? settings.contact_phone.replace(/\s+/g, '') : companyInfo.contact.phoneRaw);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,17 +43,17 @@ export const Navbar: React.FC<Props> = ({ quoteCount, onOpenQuote }) => {
             </span>
             <span className="hidden md:inline text-orange-200">|</span>
             <span className="hidden md:inline text-slate-600 text-[11px]">
-              Casa Matriz: Chañarcillo #691, Maipú, Santiago
+              Casa Matriz: {address}
             </span>
           </div>
 
           <div className="flex items-center gap-4 text-slate-700 text-xs">
             <a 
-              href={`tel:${companyInfo.contact.phoneRaw}`} 
+              href={`tel:${phoneRaw}`} 
               className="hover:text-orange-600 transition-colors flex items-center gap-1"
             >
               <Phone className="w-3 h-3 text-orange-500" />
-              <span className="font-semibold">{companyInfo.contact.phone}</span>
+              <span className="font-semibold">{phone}</span>
             </a>
             <span className="text-orange-200">|</span>
             <a 

@@ -85,7 +85,7 @@ export const labEquipments: LabEquipment[] = [
       'Garantía de 1 año y 10 años de disponibilidad en piezas de recambio'
     ],
     sagCertified: true,
-    image: 'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'calador-granos',

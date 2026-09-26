@@ -37,7 +37,7 @@ ServerSignature Off
 # 4. Enrutamiento SPA (React 19) + API PHP
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    # RewriteBase es detectado automáticamente según la carpeta (raíz o /demo/)
 
     # Si la petición va a la API (/api/...) no reescribir
     RewriteRule ^api/ - [L]

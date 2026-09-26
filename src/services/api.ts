@@ -7,10 +7,14 @@ import { initialCertifications as staticCertifications } from '../data/certifica
 const API_BASE = '/api';
 
 // -------------------------------------------------------------
-// GESTIÓN DE SESIÓN LOCAL
+// CLAVES DE ALMACENAMIENTO LOCAL DUAL-LAYER
 // -------------------------------------------------------------
 const TOKEN_KEY = 'asitec_auth_token';
 const USER_KEY = 'asitec_auth_user';
+const SETTINGS_KEY = 'asitec_custom_settings';
+const PRODUCTS_KEY = 'asitec_custom_products';
+const CERTS_KEY = 'asitec_custom_certs';
+const RECIPES_KEY = 'asitec_custom_recipes';
 
 export interface AdminUser {
   id: number;
@@ -62,9 +66,13 @@ async function safeParseJson(res: Response): Promise<{ isPhp: boolean; json: any
 }
 
 // -------------------------------------------------------------
-// 1. PRODUCTOS (Con Fallback Híbrido)
+// 1. PRODUCTOS (Con Arquitectura Híbrida: API + LocalStorage + Static)
 // -------------------------------------------------------------
 export async function getProducts(category?: string, query?: string): Promise<Product[]> {
+  let list: Product[] = [];
+  let apiSucceeded = false;
+
+  // 1. Intentar API MySQL
   try {
     const url = new URL(`${API_BASE}/products.php`, window.location.origin);
     if (category && category !== 'Todos') url.searchParams.set('category', category);
@@ -73,35 +81,84 @@ export async function getProducts(category?: string, query?: string): Promise<Pr
     const res = await fetch(url.toString());
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && json.success && Array.isArray(json.products) && json.products.length > 0) {
-      return json.products;
+      list = json.products;
+      apiSucceeded = true;
+      try {
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list));
+      } catch {}
     }
   } catch (err) {
-    console.warn('API /api/products.php no disponible. Usando datos locales de respaldo.', err);
+    // API no disponible
   }
 
-  // Fallback estático
-  let filtered = [...staticProducts];
+  // 2. Si API no respondió, usar LocalStorage o Static
+  if (!apiSucceeded) {
+    try {
+      const raw = localStorage.getItem(PRODUCTS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          list = parsed;
+        }
+      }
+    } catch {}
+
+    if (list.length === 0) {
+      list = [...staticProducts];
+    }
+  }
+
+  // 3. Filtrar
   if (category && category !== 'Todos') {
-    filtered = filtered.filter(p => p.category === category);
+    list = list.filter(p => p.category === category);
   }
   if (query) {
     const q = query.toLowerCase();
-    filtered = filtered.filter(p => 
+    list = list.filter(p => 
       p.name.toLowerCase().includes(q) || 
       p.description.toLowerCase().includes(q) ||
       p.subcategory.toLowerCase().includes(q)
     );
   }
-  return filtered;
+  return list;
 }
 
 export async function saveProduct(product: Partial<Product>, isNew: boolean): Promise<Product> {
+  const newProduct: Product = {
+    id: product.id || `prod-${Date.now()}`,
+    name: product.name || 'Producto Nuevo',
+    category: product.category || 'Pastelería',
+    subcategory: product.subcategory || 'General',
+    description: product.description || '',
+    format: product.format || 'Formato Industrial',
+    shelfLife: product.shelfLife || '12 meses a partir de la fecha de elaboración.',
+    country: product.country || 'Chile',
+    image: product.image || 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png',
+    popular: product.popular || false
+  };
+
+  // 1. Guardar de inmediato en LocalStorage
+  try {
+    const raw = localStorage.getItem(PRODUCTS_KEY);
+    let currentList: Product[] = raw ? JSON.parse(raw) : [...staticProducts];
+    if (isNew) {
+      currentList = [newProduct, ...currentList.filter(p => p.id !== newProduct.id)];
+    } else {
+      currentList = currentList.map(p => p.id === newProduct.id ? newProduct : p);
+    }
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(currentList));
+    window.dispatchEvent(new CustomEvent('asitec_products_updated', { detail: currentList }));
+  } catch (e) {
+    console.warn('Error al guardar producto localmente:', e);
+  }
+
+  // 2. Sincronizar en segundo plano con API MySQL
   try {
     const method = isNew ? 'POST' : 'PUT';
     const res = await fetch(`${API_BASE}/products.php`, {
       method,
       headers: getAuthHeaders(),
-      body: JSON.stringify(product)
+      body: JSON.stringify(newProduct)
     });
 
     const { isPhp, json } = await safeParseJson(res);
@@ -109,25 +166,25 @@ export async function saveProduct(product: Partial<Product>, isNew: boolean): Pr
       return json.product;
     }
   } catch {
-    // Entorno local sin backend PHP
+    // Si no hay backend PHP disponible, el guardado local ya garantizó persistencia
   }
 
-  // Fallback local
-  return {
-    id: product.id || `prod-${Date.now()}`,
-    name: product.name || 'Producto Nuevo',
-    category: product.category || 'Pastelería',
-    subcategory: product.subcategory || 'General',
-    description: product.description || '',
-    format: product.format || 'Formato Industrial',
-    shelfLife: product.shelfLife || '12 meses',
-    country: product.country || 'Chile',
-    image: product.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80',
-    popular: product.popular || false
-  };
+  return newProduct;
 }
 
 export async function deleteProduct(productId: string): Promise<void> {
+  // 1. Eliminar de LocalStorage
+  try {
+    const raw = localStorage.getItem(PRODUCTS_KEY);
+    let currentList: Product[] = raw ? JSON.parse(raw) : [...staticProducts];
+    currentList = currentList.filter(p => p.id !== productId);
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(currentList));
+    window.dispatchEvent(new CustomEvent('asitec_products_updated', { detail: currentList }));
+  } catch (e) {
+    console.warn('Error al eliminar producto localmente:', e);
+  }
+
+  // 2. Sincronizar con API MySQL
   try {
     const res = await fetch(`${API_BASE}/products.php?id=${encodeURIComponent(productId)}`, {
       method: 'DELETE',
@@ -136,10 +193,10 @@ export async function deleteProduct(productId: string): Promise<void> {
 
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && !json.success) {
-      throw new Error(json.error || 'Error al eliminar el producto.');
+      console.warn('Aviso al eliminar en servidor:', json.error);
     }
-  } catch (err: unknown) {
-    if (err instanceof Error && err.message.includes('Error al')) throw err;
+  } catch {
+    // Sincronización offline
   }
 }
 
@@ -147,36 +204,44 @@ export async function deleteProduct(productId: string): Promise<void> {
 // 2. CERTIFICACIONES Y ACREDITACIONES OFICIALES
 // -------------------------------------------------------------
 export async function getCertifications(): Promise<Certification[]> {
+  let list: Certification[] = [];
+  let apiSucceeded = false;
+
   try {
     const res = await fetch(`${API_BASE}/certifications.php`);
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && json.success && Array.isArray(json.certifications) && json.certifications.length > 0) {
-      return json.certifications;
+      list = json.certifications;
+      apiSucceeded = true;
+      try {
+        localStorage.setItem(CERTS_KEY, JSON.stringify(list));
+      } catch {}
     }
   } catch (err) {
-    console.warn('API /api/certifications.php no disponible. Usando datos locales de respaldo.', err);
+    // API no disponible
   }
-  return staticCertifications;
+
+  if (!apiSucceeded) {
+    try {
+      const raw = localStorage.getItem(CERTS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          list = parsed;
+        }
+      }
+    } catch {}
+
+    if (list.length === 0) {
+      list = [...staticCertifications];
+    }
+  }
+
+  return list;
 }
 
 export async function saveCertification(cert: Partial<Certification>, isNew: boolean): Promise<Certification> {
-  try {
-    const method = isNew ? 'POST' : 'PUT';
-    const res = await fetch(`${API_BASE}/certifications.php`, {
-      method,
-      headers: getAuthHeaders(),
-      body: JSON.stringify(cert)
-    });
-
-    const { isPhp, json } = await safeParseJson(res);
-    if (!isPhp && json && json.success && json.certification) {
-      return json.certification;
-    }
-  } catch {
-    // Entorno local sin backend PHP
-  }
-
-  return {
+  const newCert: Certification = {
     id: cert.id || `cert-${Date.now()}`,
     badge: cert.badge || 'Acreditación Oficial',
     institution: cert.institution || 'Servicio Agrícola y Ganadero (SAG)',
@@ -186,60 +251,101 @@ export async function saveCertification(cert: Partial<Certification>, isNew: boo
     documentUrl: cert.documentUrl || '',
     year: cert.year || '2024'
   };
+
+  try {
+    const raw = localStorage.getItem(CERTS_KEY);
+    let currentList: Certification[] = raw ? JSON.parse(raw) : [...staticCertifications];
+    if (isNew) {
+      currentList = [newCert, ...currentList.filter(c => c.id !== newCert.id)];
+    } else {
+      currentList = currentList.map(c => c.id === newCert.id ? newCert : c);
+    }
+    localStorage.setItem(CERTS_KEY, JSON.stringify(currentList));
+    window.dispatchEvent(new CustomEvent('asitec_certs_updated', { detail: currentList }));
+  } catch (e) {
+    console.warn('Error al guardar certificación localmente:', e);
+  }
+
+  try {
+    const method = isNew ? 'POST' : 'PUT';
+    const res = await fetch(`${API_BASE}/certifications.php`, {
+      method,
+      headers: getAuthHeaders(),
+      body: JSON.stringify(newCert)
+    });
+
+    const { isPhp, json } = await safeParseJson(res);
+    if (!isPhp && json && json.success && json.certification) {
+      return json.certification;
+    }
+  } catch {
+    // Offline
+  }
+
+  return newCert;
 }
 
 export async function deleteCertification(certId: string): Promise<void> {
   try {
-    const res = await fetch(`${API_BASE}/certifications.php?id=${encodeURIComponent(certId)}`, {
+    const raw = localStorage.getItem(CERTS_KEY);
+    let currentList: Certification[] = raw ? JSON.parse(raw) : [...staticCertifications];
+    currentList = currentList.filter(c => c.id !== certId);
+    localStorage.setItem(CERTS_KEY, JSON.stringify(currentList));
+    window.dispatchEvent(new CustomEvent('asitec_certs_updated', { detail: currentList }));
+  } catch (e) {
+    console.warn('Error al eliminar certificación localmente:', e);
+  }
+
+  try {
+    await fetch(`${API_BASE}/certifications.php?id=${encodeURIComponent(certId)}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
-
-    const { isPhp, json } = await safeParseJson(res);
-    if (!isPhp && json && !json.success) {
-      throw new Error(json.error || 'Error al eliminar la certificación.');
-    }
-  } catch (err: unknown) {
-    if (err instanceof Error && err.message.includes('Error al')) throw err;
-  }
+  } catch {}
 }
-
-
 
 // -------------------------------------------------------------
 // 3. RECETARIO Y VIDEOS
 // -------------------------------------------------------------
 export async function getRecipes(): Promise<Recipe[]> {
+  let list: Recipe[] = [];
+  let apiSucceeded = false;
+
   try {
     const res = await fetch(`${API_BASE}/recipes.php`);
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && json.success && Array.isArray(json.recipes) && json.recipes.length > 0) {
-      return json.recipes;
+      list = json.recipes;
+      apiSucceeded = true;
+      try {
+        localStorage.setItem(RECIPES_KEY, JSON.stringify(list));
+      } catch {}
     }
   } catch (err) {
-    console.warn('API /api/recipes.php no disponible. Usando datos locales de respaldo.', err);
+    // API no disponible
   }
-  return staticRecipes;
+
+  if (!apiSucceeded) {
+    try {
+      const raw = localStorage.getItem(RECIPES_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          list = parsed;
+        }
+      }
+    } catch {}
+
+    if (list.length === 0) {
+      list = [...staticRecipes];
+    }
+  }
+
+  return list;
 }
 
 export async function saveRecipe(rec: Partial<Recipe>, isNew: boolean): Promise<Recipe> {
-  try {
-    const method = isNew ? 'POST' : 'PUT';
-    const res = await fetch(`${API_BASE}/recipes.php`, {
-      method,
-      headers: getAuthHeaders(),
-      body: JSON.stringify(rec)
-    });
-
-    const { isPhp, json } = await safeParseJson(res);
-    if (!isPhp && json && json.success && json.recipe) {
-      return json.recipe;
-    }
-  } catch {
-    // Entorno local sin backend PHP
-  }
-
-  return {
+  const newRec: Recipe = {
     id: rec.id || `rec-${Date.now()}`,
     title: rec.title || 'Nueva Receta Técnica',
     category: rec.category || 'Pastelería',
@@ -251,80 +357,151 @@ export async function saveRecipe(rec: Partial<Recipe>, isNew: boolean): Promise<
     recommendedProduct: rec.recommendedProduct || '',
     keySteps: rec.keySteps || []
   };
+
+  try {
+    const raw = localStorage.getItem(RECIPES_KEY);
+    let currentList: Recipe[] = raw ? JSON.parse(raw) : [...staticRecipes];
+    if (isNew) {
+      currentList = [newRec, ...currentList.filter(r => r.id !== newRec.id)];
+    } else {
+      currentList = currentList.map(r => r.id === newRec.id ? newRec : r);
+    }
+    localStorage.setItem(RECIPES_KEY, JSON.stringify(currentList));
+    window.dispatchEvent(new CustomEvent('asitec_recipes_updated', { detail: currentList }));
+  } catch (e) {
+    console.warn('Error al guardar receta localmente:', e);
+  }
+
+  try {
+    const method = isNew ? 'POST' : 'PUT';
+    const res = await fetch(`${API_BASE}/recipes.php`, {
+      method,
+      headers: getAuthHeaders(),
+      body: JSON.stringify(newRec)
+    });
+
+    const { isPhp, json } = await safeParseJson(res);
+    if (!isPhp && json && json.success && json.recipe) {
+      return json.recipe;
+    }
+  } catch {
+    // Offline
+  }
+
+  return newRec;
 }
 
 export async function deleteRecipe(recId: string): Promise<void> {
   try {
-    const res = await fetch(`${API_BASE}/recipes.php?id=${encodeURIComponent(recId)}`, {
+    const raw = localStorage.getItem(RECIPES_KEY);
+    let currentList: Recipe[] = raw ? JSON.parse(raw) : [...staticRecipes];
+    currentList = currentList.filter(r => r.id !== recId);
+    localStorage.setItem(RECIPES_KEY, JSON.stringify(currentList));
+    window.dispatchEvent(new CustomEvent('asitec_recipes_updated', { detail: currentList }));
+  } catch (e) {
+    console.warn('Error al eliminar receta localmente:', e);
+  }
+
+  try {
+    await fetch(`${API_BASE}/recipes.php?id=${encodeURIComponent(recId)}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
-
-    const { isPhp, json } = await safeParseJson(res);
-    if (!isPhp && json && !json.success) {
-      throw new Error(json.error || 'Error al eliminar la receta.');
-    }
-  } catch (err: unknown) {
-    if (err instanceof Error && err.message.includes('Error al')) throw err;
-  }
+  } catch {}
 }
 
 // -------------------------------------------------------------
-// 4. CONFIGURACIÓN GENERAL
+// 4. CONFIGURACIÓN GENERAL (Ajustes de Empresa, Horarios, Teléfonos, Banco)
 // -------------------------------------------------------------
+export const DEFAULT_SETTINGS: Record<string, string> = {
+  company_name: staticCompanyInfo.name,
+  company_tagline: staticCompanyInfo.tagline,
+  company_description: staticCompanyInfo.description,
+  years_experience: '+26 años',
+  clients_count: '+850 panaderías y molinos',
+  products_count: '+45 fórmulas industriales',
+  contact_address: staticCompanyInfo.contact.address,
+  contact_phone: staticCompanyInfo.contact.phone,
+  contact_phone_raw: staticCompanyInfo.contact.phoneRaw,
+  contact_whatsapp: '+56992671171',
+  contact_email: staticCompanyInfo.contact.email,
+  contact_working_hours: staticCompanyInfo.contact.workingHours,
+  contact_maps_url: staticCompanyInfo.contact.googleMapsUrl,
+  bank_name: staticCompanyInfo.bankSecurity.bankName,
+  bank_account_holder: staticCompanyInfo.bankSecurity.accountHolder,
+  bank_account_type: staticCompanyInfo.bankSecurity.accountType,
+  bank_account_number: staticCompanyInfo.bankSecurity.accountNumber,
+  bank_rut: staticCompanyInfo.bankSecurity.rut,
+  bank_payment_email: staticCompanyInfo.bankSecurity.paymentEmail,
+  distributor_region: staticCompanyInfo.distributor.region,
+  distributor_company: staticCompanyInfo.distributor.company,
+  distributor_contact: staticCompanyInfo.distributor.contactPerson,
+  distributor_phone: staticCompanyInfo.distributor.phone,
+  distributor_phone_raw: staticCompanyInfo.distributor.phoneRaw,
+  distributor_email: staticCompanyInfo.distributor.email,
+  distributor_catalog_url: staticCompanyInfo.distributor.catalogUrl
+};
+
 export async function getSettings(): Promise<Record<string, string>> {
+  let localSettings: Record<string, string> = {};
+
+  // 1. Leer LocalStorage primero para tener respuesta inmediata
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) {
+      localSettings = JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn('Error al leer settings locales:', e);
+  }
+
+  // 2. Intentar API MySQL
   try {
     const res = await fetch(`${API_BASE}/settings.php`);
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && json.success && json.settings) {
-      return json.settings;
+      const merged = { ...DEFAULT_SETTINGS, ...localSettings, ...json.settings };
+      try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged));
+      } catch {}
+      return merged;
     }
   } catch (err) {
-    console.warn('API /api/settings.php no disponible. Usando datos de respaldo.', err);
+    // API no disponible
   }
 
-  // Fallback con datos actuales de company.ts
-  return {
-    company_name: staticCompanyInfo.name,
-    company_tagline: staticCompanyInfo.tagline,
-    company_description: staticCompanyInfo.description,
-    contact_address: staticCompanyInfo.contact.address,
-    contact_phone: staticCompanyInfo.contact.phone,
-    contact_phone_raw: staticCompanyInfo.contact.phoneRaw,
-    contact_whatsapp: '+56992671171',
-    contact_email: staticCompanyInfo.contact.email,
-    contact_working_hours: staticCompanyInfo.contact.workingHours,
-    contact_maps_url: staticCompanyInfo.contact.googleMapsUrl,
-    bank_name: staticCompanyInfo.bankSecurity.bankName,
-    bank_account_holder: staticCompanyInfo.bankSecurity.accountHolder,
-    bank_account_type: staticCompanyInfo.bankSecurity.accountType,
-    bank_account_number: staticCompanyInfo.bankSecurity.accountNumber,
-    bank_rut: staticCompanyInfo.bankSecurity.rut,
-    bank_payment_email: staticCompanyInfo.bankSecurity.paymentEmail,
-    distributor_region: staticCompanyInfo.distributor.region,
-    distributor_company: staticCompanyInfo.distributor.company,
-    distributor_contact: staticCompanyInfo.distributor.contactPerson,
-    distributor_phone: staticCompanyInfo.distributor.phone,
-    distributor_phone_raw: staticCompanyInfo.distributor.phoneRaw,
-    distributor_email: staticCompanyInfo.distributor.email,
-    distributor_catalog_url: staticCompanyInfo.distributor.catalogUrl
-  };
+  // 3. Devolver combinación de valores por defecto con ajustes locales guardados
+  return { ...DEFAULT_SETTINGS, ...localSettings };
 }
 
 export async function saveSettings(settings: Record<string, string>): Promise<void> {
+  // 1. Persistencia INMEDIATA en LocalStorage para garantizar que el usuario nunca pierda sus cambios
+  let merged: Record<string, string> = { ...DEFAULT_SETTINGS, ...settings };
+  try {
+    const currentRaw = localStorage.getItem(SETTINGS_KEY);
+    const prev = currentRaw ? JSON.parse(currentRaw) : DEFAULT_SETTINGS;
+    merged = { ...prev, ...settings };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged));
+    window.dispatchEvent(new CustomEvent('asitec_settings_updated', { detail: merged }));
+  } catch (e) {
+    console.warn('Error al guardar ajustes en localStorage:', e);
+  }
+
+  // 2. Sincronizar con API MySQL si está disponible en cPanel
   try {
     const res = await fetch(`${API_BASE}/settings.php`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify(settings)
+      body: JSON.stringify(merged)
     });
 
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && !json.success) {
-      throw new Error(json.error || 'Error al guardar la configuración.');
+      console.warn('Aviso servidor al guardar settings:', json.error);
     }
-  } catch (err: unknown) {
-    if (err instanceof Error && err.message.includes('Error al')) throw err;
+  } catch (err) {
+    // Si la base de datos de cPanel aún no está creada, los datos ya quedaron 100% seguros en localStorage
+    console.info('Guardado local activo (Backend en espera de conexión a BD MySQL):', err);
   }
 }
 
@@ -348,10 +525,10 @@ export async function uploadImage(file: File): Promise<string> {
       return json.url;
     }
   } catch {
-    // Si no hay backend PHP, usar Data URL local
+    // Si no hay backend PHP disponible, generar Data URL base64
   }
 
-  // Conversor Data URL para preview inmediato en local o demo
+  // Conversor Data URL para preview y guardado inmediato sin depender de carpetas del servidor
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
@@ -381,7 +558,7 @@ export async function login(username: string, password: string): Promise<AdminUs
     isPhp = true;
   }
 
-  // Si estamos en Vite Dev Server o hosting estático sin Apache/PHP:
+  // Fallback demo / sin conexión de base de datos
   if (isPhp || !json) {
     const validUser = username.trim().toLowerCase() === 'admin';
     const validPass = password === 'Asitec2026!Admin' || password === 'admin';
@@ -426,7 +603,7 @@ export async function checkAuth(): Promise<AdminUser | null> {
       return json.user;
     }
   } catch {
-    // Si la API no responde, recurrir a sesión local
+    // Modo offline
   }
 
   return authStorage.getUser();

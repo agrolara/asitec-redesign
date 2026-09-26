@@ -42,7 +42,7 @@ export const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [certifications, setCertifications] = useState<Certification[]>(initialCertifications);
   const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes);
-  const [_settings, setSettings] = useState<Record<string, string>>({});
+  const [settings, setSettings] = useState<Record<string, string>>({});
 
   // Public UI States
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
@@ -64,6 +64,38 @@ export const App: React.FC = () => {
     return () => {
       window.removeEventListener('popstate', handleUrlChange);
       window.removeEventListener('hashchange', handleUrlChange);
+    };
+  }, []);
+
+  // Escuchar eventos en vivo de cambios en configuración, productos, etc.
+  useEffect(() => {
+    const handleSettingsUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<Record<string, string>>;
+      if (customEvent.detail) setSettings(customEvent.detail);
+    };
+    const handleProductsUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<Product[]>;
+      if (customEvent.detail) setProducts(customEvent.detail);
+    };
+    const handleCertsUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<Certification[]>;
+      if (customEvent.detail) setCertifications(customEvent.detail);
+    };
+    const handleRecipesUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<Recipe[]>;
+      if (customEvent.detail) setRecipes(customEvent.detail);
+    };
+
+    window.addEventListener('asitec_settings_updated', handleSettingsUpdate);
+    window.addEventListener('asitec_products_updated', handleProductsUpdate);
+    window.addEventListener('asitec_certs_updated', handleCertsUpdate);
+    window.addEventListener('asitec_recipes_updated', handleRecipesUpdate);
+
+    return () => {
+      window.removeEventListener('asitec_settings_updated', handleSettingsUpdate);
+      window.removeEventListener('asitec_products_updated', handleProductsUpdate);
+      window.removeEventListener('asitec_certs_updated', handleCertsUpdate);
+      window.removeEventListener('asitec_recipes_updated', handleRecipesUpdate);
     };
   }, []);
 
@@ -100,13 +132,27 @@ export const App: React.FC = () => {
     initApp();
   }, []);
 
-  const handleGoToSite = () => {
+  const handleGoToSite = async () => {
     if (window.location.hash === '#admin') {
       window.location.hash = '';
     } else if (window.location.pathname.endsWith('/admin')) {
       window.history.pushState(null, '', '/');
     }
     setIsAdminRoute(false);
+
+    // Refrescar datos dinámicos inmediatamente al volver a la web
+    try {
+      const [prodsData, certsData, recsData, setsData] = await Promise.all([
+        getProducts(),
+        getCertifications(),
+        getRecipes(),
+        getSettings()
+      ]);
+      if (prodsData && prodsData.length > 0) setProducts(prodsData);
+      if (certsData && certsData.length > 0) setCertifications(certsData);
+      if (recsData && recsData.length > 0) setRecipes(recsData);
+      if (setsData) setSettings(setsData);
+    } catch {}
   };
 
   // Carrito de Cotizaciones (RFQ)
@@ -196,6 +242,7 @@ export const App: React.FC = () => {
       <Navbar
         quoteCount={totalQuoteCount}
         onOpenQuote={() => setIsQuoteOpen(true)}
+        settings={settings}
       />
 
       {/* Main Content Sections con Datos Dinámicos */}
@@ -226,13 +273,13 @@ export const App: React.FC = () => {
           onOpenQuote={() => setIsQuoteOpen(true)}
         />
 
-        <TrustAndSecuritySection />
+        <TrustAndSecuritySection settings={settings} />
 
-        <ContactSection />
+        <ContactSection settings={settings} />
       </main>
 
       {/* Footer con enlace a Administración */}
-      <Footer />
+      <Footer settings={settings} />
 
       {/* Product Detail Modal */}
       <ProductModal

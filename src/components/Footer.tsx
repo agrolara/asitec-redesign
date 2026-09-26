@@ -11,7 +11,15 @@ import {
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  settings?: Record<string, string>;
+}
+
+export const Footer: React.FC<FooterProps> = ({ settings }) => {
+  const phone = settings?.contact_phone || '22 616 0200';
+  const email = settings?.contact_email || 'info@asitec.cl';
+  const address = settings?.contact_address || 'Chañarcillo #691, Maipú';
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -108,15 +116,15 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-slate-400">
               <li className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                <span>22 616 0200</span>
+                <span>{phone}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                <span>info@asitec.cl</span>
+                <span>{email}</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0 mt-0.5" />
-                <span>Chañarcillo #691, Maipú</span>
+                <span>{address}</span>
               </li>
             </ul>
           </div>

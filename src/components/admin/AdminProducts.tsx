@@ -255,7 +255,14 @@ export const AdminProducts: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
                           {prod.image ? (
-                            <img src={prod.image} alt={prod.name} className="w-full h-full object-contain mix-blend-multiply" />
+                            <img 
+                              src={prod.image} 
+                              alt={prod.name} 
+                              className="w-full h-full object-contain mix-blend-multiply" 
+                              onError={(e) => {
+                                e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
+                              }}
+                            />
                           ) : (
                             <Package className="w-5 h-5 text-slate-400" />
                           )}
@@ -438,7 +445,14 @@ export const AdminProducts: React.FC = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-xl bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
                     {editingProduct.image ? (
-                      <img src={editingProduct.image} alt="Preview" className="w-full h-full object-contain" />
+                      <img 
+                        src={editingProduct.image} 
+                        alt="Preview" 
+                        className="w-full h-full object-contain" 
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
+                        }}
+                      />
                     ) : (
                       <Package className="w-8 h-8 text-slate-300" />
                     )}
