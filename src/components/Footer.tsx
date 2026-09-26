@@ -39,7 +39,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
                 Descarga nuestros catálogos completos en formato PDF
               </h3>
               <p className="text-xs text-slate-400">
-                Líneas de pastelería, panadería Rapidox, fichas de mejoradores y equipamiento de molienda.
+                Líneas de pastelería, panadería Rapidox y fichas técnicas de formulación.
               </p>
             </div>
 

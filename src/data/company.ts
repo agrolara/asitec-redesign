@@ -42,13 +42,6 @@ export const companyInfo = {
       url: 'https://www.asitec.cl/catalogos/Catalogoc.pdf',
       format: 'PDF',
       size: '4.2 MB'
-    },
-    {
-      name: 'Catálogo Industrial de Molinería y Equipos',
-      description: 'Vitaminas, Enzimas, Mejoradores Industriales y Equipamiento SAG',
-      url: 'https://www.asitec.cl/catalogos/Catalogo_Industrial_Asitec.pdf',
-      format: 'PDF',
-      size: '3.8 MB'
     }
   ],
   services: [
