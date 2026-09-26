@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Layers, 
   Package, 
@@ -7,7 +7,8 @@ import {
   ArrowRight, 
   Factory, 
   CheckCircle2,
-  Mail
+  Mail,
+  Check
 } from 'lucide-react';
 import { companyInfo } from '../data/company';
 
@@ -16,11 +17,24 @@ interface Props {
 }
 
 export const ServicesSection: React.FC<Props> = ({ onOpenQuote }) => {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
   const iconMap: Record<string, React.ElementType> = {
     Layers,
     Package,
     Cpu,
     FlaskConical
+  };
+
+  const handleContactEngineering = (_e?: React.MouseEvent) => {
+    try {
+      navigator.clipboard.writeText('info@asitec.cl');
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 3000);
+    } catch {
+      // ignore
+    }
+    window.location.href = 'mailto:info@asitec.cl?subject=Contacto%20Ingenier%C3%ADa%20de%20Procesos%20ASITEC';
   };
 
   return (
@@ -80,22 +94,38 @@ export const ServicesSection: React.FC<Props> = ({ onOpenQuote }) => {
         </div>
 
         {/* Industrial Banner */}
-        <div className="mt-12 p-8 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-orange-500/10">
-          <div className="space-y-2 text-center md:text-left">
-            <h3 className="text-xl font-bold text-white">
+        <div className="mt-12 p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xl shadow-orange-500/10">
+          <div className="space-y-2 text-center lg:text-left">
+            <h3 className="text-xl sm:text-2xl font-black text-white">
               ¿Necesitas una formulación exclusiva o maquila personalizada?
             </h3>
-            <p className="text-xs text-orange-50 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-orange-50 max-w-2xl leading-relaxed">
               Desarrollamos premezclas a medida para optimizar el costo por kilo, color, tolerancia fermentativa y vida útil en anaquel de tus líneas de panificación y pastelería.
             </p>
           </div>
-          <a
-            href="mailto:info@asitec.cl?subject=Solicitud%20de%20Formulaci%C3%B3n%20Exclusiva%20o%20Maquila%20-%20Ingenier%C3%ADa%20de%20Procesos%20ASITEC&body=Estimado%20Equipo%20de%20Ingenier%C3%ADa%20de%20Procesos%20de%20ASITEC%20S.A.%2C%0A%0AMe%20gustar%C3%ADa%20solicitar%20informaci%C3%B3n%20y%20asesor%C3%ADa%20t%C3%A9cnica%20para%20un%20desarrollo%20personalizado%20%2F%20maquila%3A%0A%0A-%20Empresa%20o%20Raz%C3%B3n%20Social%3A%20%0A-%20Tipo%20de%20producto%20o%20formulaci%C3%B3n%20requerida%3A%20%0A-%20Volumen%20mensual%20estimado%3A%20%0A-%20Tel%C3%A9fono%20de%20contacto%3A%20%0A-%20Ciudad%20o%20Regi%C3%B3n%3A%20%0A%0ASaludos%20cordiales."
-            className="px-6 py-3.5 rounded-xl bg-white hover:bg-orange-50 text-orange-950 font-bold text-xs tracking-wide shadow-md transition-all shrink-0 active:scale-95 flex items-center gap-2"
-          >
-            <Mail className="w-4 h-4 text-orange-600" />
-            <span>Contactar a Ingeniería de Procesos</span>
-          </a>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+            <a
+              href="mailto:info@asitec.cl?subject=Contacto%20Ingenier%C3%ADa%20de%20Procesos%20ASITEC"
+              onClick={handleContactEngineering}
+              className="px-6 py-4 rounded-xl bg-white hover:bg-orange-50 text-orange-950 font-black text-xs sm:text-sm tracking-wide shadow-lg transition-all active:scale-95 flex items-center gap-2.5 cursor-pointer"
+            >
+              {copiedEmail ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-600" />
+                  <span className="text-emerald-700">¡info@asitec.cl copiado!</span>
+                </>
+              ) : (
+                <>
+                  <Mail className="w-4 h-4 text-orange-600" />
+                  <span>Contactar a Ingeniería de Procesos</span>
+                </>
+              )}
+            </a>
+            <span className="text-xs font-mono font-bold text-white bg-black/20 px-3 py-2 rounded-xl border border-white/20">
+              info@asitec.cl
+            </span>
+          </div>
         </div>
 
       </div>

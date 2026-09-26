@@ -12,8 +12,6 @@ import {
   Cake,
   Wheat,
   Layers,
-  Sparkles,
-  Flame,
   Clock
 } from 'lucide-react';
 import type { Product } from '../types';
@@ -50,102 +48,64 @@ export const CatalogSection: React.FC<Props> = ({
   
   // Independent slide index for each category card carousel
   const [cardSlides, setCardSlides] = useState<Record<string, number>>({
-    'cat-pasteleria-premezclas': 0,
-    'cat-bases-cremas': 0,
-    'cat-panaderia-premezclas': 0,
-    'cat-mejoradores': 0,
-    'cat-levaduras': 0,
+    'cat-pasteleria': 0,
+    'cat-panaderia': 0,
     'cat-molinos': 0
   });
 
-  // Category Packages Definition (Bakels Inspiration)
+  // Category Packages Definition: Exactly 3 Main Product Divisions
   const categoryPackages: CategoryPackage[] = useMemo(() => [
     {
-      id: 'cat-pasteleria-premezclas',
-      title: 'Premezclas para Pastelería & Queques',
-      badge: 'Pastelería Fina',
-      shortDesc: 'Premezclas industriales para bizcochuelos aireados, queques húmedos de fruta y muffins de excelente volumen.',
+      id: 'cat-pasteleria',
+      title: 'Pastelería Fina & Repostería',
+      badge: 'Línea Pastelería',
+      shortDesc: 'Premezclas para bizcochos, queques y muffins de alto volumen, más bases en polvo para crema pastelera, chantilly, merengue italiano y remojo tres leches.',
       icon: Cake,
       images: [
         'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_bizcocho_vainilla.jpg',
         'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_bizcocho_chocolate.jpg',
         'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_vainilla.jpg',
         'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_muffins_vainilla.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_chocolate.jpg'
-      ],
-      subcategories: ['Bizcochos', 'Queques Especiales', 'Muffins', 'Queques de Pascua'],
-      filterFn: (p: Product) => p.category === 'Pastelería' && p.subcategory.toLowerCase().includes('premezcla')
-    },
-    {
-      id: 'cat-bases-cremas',
-      title: 'Bases, Cremas & Repostería',
-      badge: 'Bases en Polvo',
-      shortDesc: 'Cremas pasteleras horneables y congelables, cremas chantilly, merengue italiano, brillos y remojo tres leches.',
-      icon: Sparkles,
-      images: [
-        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png',
+        'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_chocolate.jpg',
         'https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-1.jpg',
         'https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-chocolate-1.jpg',
         'https://www.asitec.cl/wp-content/uploads/2021/04/remojo-3-leches.jpg',
         'https://www.asitec.cl/wp-content/uploads/2021/04/brillo.jpg',
         'https://www.asitec.cl/wp-content/uploads/2021/04/bases-para-preparar-merengue-1.jpg'
       ],
-      subcategories: ['Crema Pastelera', 'Chantilly', 'Merengue', 'Brillo Espejo', 'Tres Leches'],
-      filterFn: (p: Product) => p.category === 'Pastelería' && (p.subcategory.toLowerCase().includes('bases') || !p.subcategory.toLowerCase().includes('premezcla'))
+      subcategories: ['Bizcochos & Queques', 'Muffins', 'Crema Pastelera', 'Chantilly', 'Merengue', 'Tres Leches', 'Brillos'],
+      filterFn: (p: Product) => p.category === 'Pastelería'
     },
     {
-      id: 'cat-panaderia-premezclas',
-      title: 'Premezclas Panadería Línea Rapidox',
-      badge: 'Panificación Industrial',
-      shortDesc: 'Premezclas completas con materia grasa incorporada para pan de molde blanco/integral, amasado, dobladas y ciabatta.',
+      id: 'cat-panaderia',
+      title: 'Panadería Rapidox & Mejoradores',
+      badge: 'Línea Panadería',
+      shortDesc: 'Mejoradores enzimáticos para marraqueta y hallulla, levaduras secas instantáneas Up Bakery y premezclas completas con materia grasa incorporada.',
       icon: Wheat,
-      images: [
-        'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-500g.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'
-      ],
-      subcategories: ['Molde Blanco', 'Molde Integral', 'Amasado', 'Dobladas', 'Pan Ciabatta'],
-      filterFn: (p: Product) => p.category === 'Panadería' && p.subcategory.toLowerCase().includes('premezclas')
-    },
-    {
-      id: 'cat-mejoradores',
-      title: 'Mejoradores Enzimáticos & Núcleos',
-      badge: 'Rendimiento Panadero',
-      shortDesc: 'Mejoradores para marraqueta, hallulla y panes crujientes. Fórmulas especiales 50% reducidas en sodio y bases soft.',
-      icon: Flame,
       images: [
         'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg',
         'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta-especial.jpg',
         'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-para-allulla.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/07/mejorador-marraqueta-reducido-en-50-sodio.jpg'
-      ],
-      subcategories: ['Marraqueta', 'Marraqueta Especial', 'Hallulla', '-50% Sodio', 'Bases Soft'],
-      filterFn: (p: Product) => p.category === 'Panadería' && p.subcategory.toLowerCase().includes('mejoradores')
-    },
-    {
-      id: 'cat-levaduras',
-      title: 'Levaduras Instantáneas Up Bakery',
-      badge: 'Línea Fermentación',
-      shortDesc: 'Levadura instantánea seca de alto poder fermentativo para panificación directa sin hidratación previa.',
-      icon: Layers,
-      images: [
         'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-500g.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-11g.jpg'
+        'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-11g.jpg',
+        'https://www.asitec.cl/wp-content/uploads/2021/07/mejorador-marraqueta-reducido-en-50-sodio.jpg',
+        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'
       ],
-      subcategories: ['Caja 20 x 500 g', 'Display 360 x 11 g', 'Uso Directo Harina'],
-      filterFn: (p: Product) => p.category === 'Panadería' && p.subcategory.toLowerCase().includes('levadura')
+      subcategories: ['Mejorador Marraqueta', 'Mejorador Hallulla', 'Levaduras Up Bakery', 'Pan de Molde', 'Pan Amasado', '-50% Sodio'],
+      filterFn: (p: Product) => p.category === 'Panadería'
     },
     {
       id: 'cat-molinos',
       title: 'Insumos & Aditivos para Molinos',
       badge: 'Línea Molinera',
-      shortDesc: 'Mix vitamínico de enriquecimiento, complejos enzimáticos, blanqueadores de harina, gluten de trigo y ácido ascórbico.',
-      icon: Package,
+      shortDesc: 'Mix vitamínico de enriquecimiento para harinas, complejos enzimáticos, blanqueadores, gluten de trigo vital y ácido ascórbico de grado alimentario.',
+      icon: Layers,
       images: [
-        'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png'
+        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png',
+        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png',
+        'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg'
       ],
-      subcategories: ['Mix Vitamínico', 'Mix Enzimático', 'Blanqueadores', 'Gluten', 'Ácido Ascórbico'],
+      subcategories: ['Mix Vitamínico Harinas', 'Complejos Enzimáticos', 'Blanqueadores', 'Gluten Vital', 'Ácido Ascórbico'],
       filterFn: (p: Product) => p.category === 'Insumos para Molinos'
     }
   ], []);
@@ -330,7 +290,7 @@ export const CatalogSection: React.FC<Props> = ({
           </div>
         ) : (
           /* 2. PACKAGED CATEGORY CARDS GRID (Bakels Clean Minimalist Style) */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {categoryPackages.map((pkg) => {
               const Icon = pkg.icon;
               const matchingProds = products.filter(pkg.filterFn);

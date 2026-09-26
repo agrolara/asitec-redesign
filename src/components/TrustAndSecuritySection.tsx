@@ -36,16 +36,30 @@ export const TrustAndSecuritySection: React.FC = () => {
           </p>
         </div>
 
+        {/* Gran Banner de Aviso de Seguridad ASITEC */}
+        <div className="max-w-4xl mx-auto mb-8 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border-2 border-orange-300 shadow-xl shadow-orange-500/10 flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-orange-500 text-white flex items-center justify-center shrink-0 shadow-md">
+            <AlertTriangle className="w-8 h-8 sm:w-9 sm:h-9" />
+          </div>
+          <div className="space-y-2 flex-1">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-black uppercase tracking-wider border border-orange-300">
+              <ShieldCheck className="w-4 h-4 text-orange-600" />
+              <span>Comunicado Oficial de Seguridad ASITEC</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              AVISO DE SEGURIDAD ASITEC S.A.
+            </h3>
+            <p className="text-base sm:text-lg font-bold text-orange-950 leading-snug">
+              ASITEC S.A. nunca solicitará transferencias a personas naturales ni cuentas de terceros ajenos a nuestra razón social.
+            </p>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+              Todos los pagos de facturas deben emitirse única y exclusivamente a nombre de <strong>ASITEC S.A.</strong> en nuestra cuenta corriente oficial verificada de <strong>Banco de Chile</strong> que se detalla a continuación.
+            </p>
+          </div>
+        </div>
+
         {/* Centered Bank Account Card (Bakels White & Orange Pastel Style) */}
         <div className="max-w-3xl mx-auto bg-gradient-to-br from-white via-orange-50/20 to-amber-50/30 rounded-3xl p-6 sm:p-9 border border-orange-200/80 shadow-xl shadow-orange-500/5 relative overflow-hidden">
-          
-          {/* Security Alert Header */}
-          <div className="flex items-start sm:items-center gap-3 p-3.5 rounded-2xl bg-orange-50 border border-orange-200/80 text-orange-950 text-xs font-semibold mb-6">
-            <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5 sm:mt-0" />
-            <span>
-              <strong>AVISO DE SEGURIDAD:</strong> ASITEC S.A. nunca solicitará transferencias a personas naturales ni cuentas de terceros ajenos a nuestra razón social.
-            </span>
-          </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3.5">
