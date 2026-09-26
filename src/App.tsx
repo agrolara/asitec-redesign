@@ -257,6 +257,7 @@ export const App: React.FC = () => {
           onSelectCategory={(cat) => setSelectedCategory(cat)}
           onSelectProduct={(p) => setActiveProduct(p)}
           onQuickAdd={handleQuickAdd}
+          settings={settings}
         />
 
         <CertificationsSection

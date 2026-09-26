@@ -56,8 +56,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout, 
     },
     {
       id: 'settings' as const,
-      name: 'Configuración General',
-      description: 'Teléfonos, Banco de Chile, Ataelqui',
+      name: 'Configuración & Carruseles',
+      description: 'Carruseles de Categorías, Teléfonos, Cuentas Bancarias',
       icon: Settings,
       badge: 'Empresa'
     }

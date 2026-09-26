@@ -23,6 +23,7 @@ interface Props {
   onSelectCategory: (cat: string) => void;
   onSelectProduct: (p: Product) => void;
   onQuickAdd: (p: Product) => void;
+  settings?: Record<string, string>;
 }
 
 interface CategoryPackage {
@@ -39,7 +40,8 @@ interface CategoryPackage {
 export const CatalogSection: React.FC<Props> = ({ 
   products = staticProducts,
   onSelectProduct, 
-  onQuickAdd 
+  onQuickAdd,
+  settings
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategoryModal, setActiveCategoryModal] = useState<CategoryPackage | null>(null);
@@ -54,70 +56,114 @@ export const CatalogSection: React.FC<Props> = ({
   });
 
   // Category Packages Definition: Exactly 3 Main Product Divisions
-  const categoryPackages: CategoryPackage[] = useMemo(() => [
-    {
-      id: 'cat-pasteleria',
-      title: 'Pastelería Fina & Repostería',
-      badge: 'Línea Pastelería',
-      shortDesc: 'Premezclas para bizcochos, queques y muffins de alto volumen, más bases en polvo para crema pastelera, chantilly, merengue italiano y remojo tres leches.',
-      icon: Cake,
-      images: [
-        'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_bizcocho_vainilla.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_bizcocho_chocolate.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_vainilla.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_muffins_vainilla.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_chocolate.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-1.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-chocolate-1.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/remojo-3-leches.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/brillo.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/bases-para-preparar-merengue-1.jpg'
-      ],
-      subcategories: ['Bizcochos & Queques', 'Muffins', 'Crema Pastelera', 'Chantilly', 'Merengue', 'Tres Leches', 'Brillos'],
-      filterFn: (p: Product) => {
-        const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return c.includes('pasteler');
+  const categoryPackages: CategoryPackage[] = useMemo(() => {
+    const getCategoryImages = (
+      catKey: 'pasteleria' | 'panaderia' | 'molinos',
+      fallbackList: string[],
+      filterFn: (p: Product) => boolean
+    ): string[] => {
+      const mode = settings?.[`category_carousel_mode_${catKey}`];
+      const customRaw = settings?.[`category_carousel_${catKey}`];
+
+      // Caso especial: Línea Molinera no tiene fotos comerciales de productos
+      if (catKey === 'molinos') {
+        if (mode === 'none' || (!mode && !customRaw)) {
+          return []; // Activa la tarjeta técnica limpia sin imágenes rotas
+        }
       }
-    },
-    {
-      id: 'cat-panaderia',
-      title: 'Panadería Rapidox & Mejoradores',
-      badge: 'Línea Panadería',
-      shortDesc: 'Mejoradores enzimáticos para marraqueta y hallulla, levaduras secas instantáneas Up Bakery y premezclas completas con materia grasa incorporada.',
-      icon: Wheat,
-      images: [
-        'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta-especial.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-para-allulla.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-500g.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-11g.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/07/mejorador-marraqueta-reducido-en-50-sodio.jpg',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'
-      ],
-      subcategories: ['Mejorador Marraqueta', 'Mejorador Hallulla', 'Levaduras Up Bakery', 'Pan de Molde', 'Pan Amasado', '-50% Sodio'],
-      filterFn: (p: Product) => {
-        const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return c.includes('panader');
+
+      if (customRaw) {
+        try {
+          const list = JSON.parse(customRaw);
+          if (Array.isArray(list) && list.length > 0) {
+            return list.filter((url: string) => typeof url === 'string' && url.trim() !== '');
+          }
+        } catch {
+          // ignore error
+        }
       }
-    },
-    {
-      id: 'cat-molinos',
-      title: 'Insumos & Aditivos para Molinos',
-      badge: 'Línea Molinera',
-      shortDesc: 'Mix vitamínico de enriquecimiento para harinas, complejos enzimáticos, blanqueadores, gluten de trigo vital y ácido ascórbico de grado alimentario.',
-      icon: Layers,
-      images: [
-        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-03-1.png',
-        'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png',
-        'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg'
-      ],
-      subcategories: ['Mix Vitamínico Harinas', 'Complejos Enzimáticos', 'Blanqueadores', 'Gluten Vital', 'Ácido Ascórbico'],
-      filterFn: (p: Product) => {
-        const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return c.includes('molino');
+
+      if (mode === 'custom') {
+        return [];
       }
-    }
-  ], []);
+
+      // Modo automático: extraer fotos reales de los productos de esta categoría que tengan imagen asignada
+      const realProductImages = products
+        .filter(filterFn)
+        .map(p => p.image)
+        .filter((img): img is string => Boolean(img && img.trim() !== ''));
+
+      if (realProductImages.length > 0) {
+        return Array.from(new Set(realProductImages));
+      }
+
+      return catKey === 'molinos' ? [] : fallbackList;
+    };
+
+    const pasteleriaFilter = (p: Product) => {
+      const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return c.includes('pasteler');
+    };
+    const panaderiaFilter = (p: Product) => {
+      const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return c.includes('panader');
+    };
+    const molinosFilter = (p: Product) => {
+      const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return c.includes('molino');
+    };
+
+    return [
+      {
+        id: 'cat-pasteleria',
+        title: 'Pastelería Fina & Repostería',
+        badge: 'Línea Pastelería',
+        shortDesc: 'Premezclas para bizcochos, queques y muffins de alto volumen, más bases en polvo para crema pastelera, chantilly, merengue italiano y remojo tres leches.',
+        icon: Cake,
+        images: getCategoryImages('pasteleria', [
+          'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_bizcocho_vainilla.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_bizcocho_chocolate.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_vainilla.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_muffins_vainilla.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/07/premezcla_queque_chocolate.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-1.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/04/crema-chantilly-chocolate-1.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/04/remojo-3-leches.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/04/brillo.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/04/bases-para-preparar-merengue-1.jpg'
+        ], pasteleriaFilter),
+        subcategories: ['Bizcochos & Queques', 'Muffins', 'Crema Pastelera', 'Chantilly', 'Merengue', 'Tres Leches', 'Brillos'],
+        filterFn: pasteleriaFilter
+      },
+      {
+        id: 'cat-panaderia',
+        title: 'Panadería Rapidox & Mejoradores',
+        badge: 'Línea Panadería',
+        shortDesc: 'Mejoradores enzimáticos para marraqueta y hallulla, levaduras secas instantáneas Up Bakery y premezclas completas con materia grasa incorporada.',
+        icon: Wheat,
+        images: getCategoryImages('panaderia', [
+          'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta-especial.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-para-allulla.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-500g.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2019/07/levadura-instantanea-rapidox-11g.jpg',
+          'https://www.asitec.cl/wp-content/uploads/2021/07/mejorador-marraqueta-reducido-en-50-sodio.jpg'
+        ], panaderiaFilter),
+        subcategories: ['Mejorador Marraqueta', 'Mejorador Hallulla', 'Levaduras Up Bakery', 'Pan de Molde', 'Pan Amasado', '-50% Sodio'],
+        filterFn: panaderiaFilter
+      },
+      {
+        id: 'cat-molinos',
+        title: 'Insumos & Aditivos para Molinos',
+        badge: 'Línea Molinera',
+        shortDesc: 'Mix vitamínico de enriquecimiento para harinas, complejos enzimáticos, blanqueadores, gluten de trigo vital y ácido ascórbico de grado alimentario.',
+        icon: Layers,
+        images: getCategoryImages('molinos', [], molinosFilter),
+        subcategories: ['Mix Vitamínico Harinas', 'Complejos Enzimáticos', 'Blanqueadores', 'Gluten Vital', 'Ácido Ascórbico'],
+        filterFn: molinosFilter
+      }
+    ];
+  }, [products, settings]);
 
   // Automated card slides rotation every 4.5 seconds
   useEffect(() => {
@@ -343,52 +389,70 @@ export const CatalogSection: React.FC<Props> = ({
                       </span>
                     </div>
 
-                    {/* Mini Image Carousel Inside Card */}
-                    <div className="relative h-48 rounded-2xl bg-white border border-orange-100 overflow-hidden mb-5 p-3 flex items-center justify-center shadow-inner group/img select-none">
-                      <img
-                        src={currentImg || 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'}
-                        alt={pkg.title}
-                        className="max-h-36 w-auto object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-md"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
-                        }}
-                      />
+                    {/* Mini Image Carousel Inside Card OR Technical Presentation Badge */}
+                    {pkg.images.length > 0 ? (
+                      <div className="relative h-48 rounded-2xl bg-white border border-orange-100 overflow-hidden mb-5 p-3 flex items-center justify-center shadow-inner group/img select-none">
+                        <img
+                          src={currentImg}
+                          alt={pkg.title}
+                          className="max-h-36 w-auto object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-md"
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
 
-                      {/* Carousel controls if more than 1 image */}
-                      {pkg.images.length > 1 && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={(e) => handlePrevSlide(pkg.id, pkg.images.length, e)}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/90 hover:bg-orange-500 hover:text-white text-slate-600 border border-orange-200 opacity-0 group-hover/img:opacity-100 transition-opacity shadow-sm cursor-pointer"
-                            title="Anterior"
-                          >
-                            <ChevronLeft className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => handleNextSlide(pkg.id, pkg.images.length, e)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/90 hover:bg-orange-500 hover:text-white text-slate-600 border border-orange-200 opacity-0 group-hover/img:opacity-100 transition-opacity shadow-sm cursor-pointer"
-                            title="Siguiente"
-                          >
-                            <ChevronRight className="w-3.5 h-3.5" />
-                          </button>
+                        {/* Carousel controls if more than 1 image */}
+                        {pkg.images.length > 1 && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={(e) => handlePrevSlide(pkg.id, pkg.images.length, e)}
+                              className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/90 hover:bg-orange-500 hover:text-white text-slate-600 border border-orange-200 opacity-0 group-hover/img:opacity-100 transition-opacity shadow-sm cursor-pointer"
+                              title="Anterior"
+                            >
+                              <ChevronLeft className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => handleNextSlide(pkg.id, pkg.images.length, e)}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/90 hover:bg-orange-500 hover:text-white text-slate-600 border border-orange-200 opacity-0 group-hover/img:opacity-100 transition-opacity shadow-sm cursor-pointer"
+                              title="Siguiente"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
 
-                          {/* Dots */}
-                          <div className="absolute bottom-2 flex gap-1">
-                            {pkg.images.map((_, i) => (
-                              <span
-                                key={i}
-                                className={`h-1.5 rounded-full transition-all ${
-                                  currentSlideIdx === i ? 'w-4 bg-orange-500' : 'w-1.5 bg-slate-300'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
+                            {/* Dots */}
+                            <div className="absolute bottom-2 flex gap-1">
+                              {pkg.images.map((_, i) => (
+                                <span
+                                  key={i}
+                                  className={`h-1.5 rounded-full transition-all ${
+                                    currentSlideIdx === i ? 'w-4 bg-orange-500' : 'w-1.5 bg-slate-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      /* Technical Card Presentation for categories without retail product photos (e.g. Línea Molinera) */
+                      <div className="relative h-48 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950/80 border border-slate-700/60 overflow-hidden mb-5 p-4 flex flex-col items-center justify-center text-center shadow-inner select-none">
+                        <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400 mb-2.5 shadow-sm">
+                          <Icon className="w-6 h-6" />
+                        </div>
+                        <span className="text-xs font-bold text-white tracking-wide uppercase">
+                          Suministro Industrial a Granel
+                        </span>
+                        <p className="text-[11px] text-slate-300 mt-1 max-w-[240px] leading-tight">
+                          Fórmulas puras, micronutrientes y complejos enzimáticos concentrados.
+                        </p>
+                        <span className="mt-2.5 text-[10px] font-semibold text-amber-300 bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-800/60">
+                          Especificaciones técnicas y dosificación B2B
+                        </span>
+                      </div>
+                    )}
 
                     {/* Title & Short Description */}
                     <h3 className="text-lg sm:text-xl font-black text-slate-900 group-hover:text-orange-600 transition-colors leading-snug">
