@@ -69,16 +69,23 @@ export const ProductModal: React.FC<Props> = ({ product, onClose, onAddToQuote }
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-center sm:items-start">
-            {/* Product Image */}
+            {/* Product Image / Cuadro en blanco */}
             <div className="w-28 h-28 sm:w-32 sm:h-32 shrink-0 rounded-xl bg-slate-50 p-2 border border-slate-200 flex items-center justify-center overflow-hidden">
-              <img 
-                src={product.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80'} 
-                alt={product.name}
-                className="w-full h-full object-contain mix-blend-multiply transition-transform hover:scale-105"
-                onError={(e) => {
-                  e.currentTarget.src = 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80';
-                }}
-              />
+              {product.image ? (
+                <img 
+                  src={product.image} 
+                  alt={product.name}
+                  className="w-full h-full object-contain mix-blend-multiply transition-transform hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-white rounded-lg border border-slate-100 flex flex-col items-center justify-center text-slate-300">
+                  <Package className="w-8 h-8 text-slate-200 mb-1" />
+                  <span className="text-[10px] font-semibold text-slate-400">Sin fotografía</span>
+                </div>
+              )}
             </div>
 
             {/* Main Info */}

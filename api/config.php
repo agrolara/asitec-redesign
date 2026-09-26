@@ -42,9 +42,11 @@ function getDbConnection(): ?PDO {
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
         ];
         try {
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+            $pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
         } catch (PDOException $e) {
             $failed = true;
             $pdo = null;
@@ -52,6 +54,22 @@ function getDbConnection(): ?PDO {
         }
     }
     return $pdo;
+}
+
+/**
+ * Sanitizador de texto UTF-8 para evitar problemas de acentos y caracteres extraños
+ */
+function cleanUtf8(string $str): string {
+    $replacements = [
+        'PastelerÃ­a' => 'Pastelería',
+        'PanaderÃ­a'  => 'Panadería',
+        'LÃºcuma'     => 'Lúcuma',
+        'PlÃ¡tano'    => 'Plátano',
+        'MadrÃ­d'     => 'Madrid',
+        'Ã¡' => 'á', 'Ã©' => 'é', 'Ã­' => 'í', 'Ã³' => 'ó', 'Ãº' => 'ú', 'Ã±' => 'ñ',
+        'Ã' => 'Á', 'Ã‰' => 'É', 'Ã' => 'Í', 'Ã“' => 'Ó', 'Ãš' => 'Ú', 'Ã‘' => 'Ñ'
+    ];
+    return str_replace(array_keys($replacements), array_values($replacements), $str);
 }
 
 /**

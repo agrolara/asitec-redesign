@@ -1,6 +1,6 @@
 <?php
 /**
- * ASITEC S.A. - Endpoint CRUD de Productos
+ * ASITEC S.A. - Endpoint CRUD de Productos con Auto-Recuperación y Soporte de Foto Opcional
  * GET /api/products.php
  * POST /api/products.php
  * PUT /api/products.php
@@ -13,21 +13,77 @@ $method = $_SERVER['REQUEST_METHOD'];
 $pdo = getDbConnection();
 $dataFile = __DIR__ . '/data_products.json';
 
-// Función helper para formatear producto a camelCase (frontend React)
+// Función helper para formatear producto a camelCase (frontend React) y sanitizar UTF-8
 function formatProduct(array $row): array {
+    $cat = cleanUtf8($row['category'] ?? 'Pastelería');
+    $name = cleanUtf8($row['name'] ?? '');
+    $sub = cleanUtf8($row['subcategory'] ?? 'General');
+    $desc = cleanUtf8($row['description'] ?? '');
+    // Permite que image quede vacía si el usuario decide eliminarla
+    $image = trim($row['image'] ?? '');
+
     return [
         'id'          => $row['id'] ?? '',
-        'name'        => $row['name'] ?? '',
-        'category'    => $row['category'] ?? 'Pastelería',
-        'subcategory' => $row['subcategory'] ?? 'General',
-        'description' => $row['description'] ?? '',
+        'name'        => $name,
+        'category'    => $cat,
+        'subcategory' => $sub,
+        'description' => $desc,
         'format'      => $row['format'] ?? '',
         'shelfLife'   => $row['shelf_life'] ?? ($row['shelfLife'] ?? ''),
         'country'     => $row['country'] ?? 'Chile',
-        'image'       => $row['image'] ?? '',
+        'image'       => $image,
         'popular'     => (bool)($row['popular'] ?? 0),
         'sourceUrl'   => $row['source_url'] ?? ($row['sourceUrl'] ?? null)
     ];
+}
+
+// -------------------------------------------------------------
+// AUTO-REPARACIÓN: Si la base de datos tiene menos de 25 productos, auto-poblar los 43 oficiales
+// -------------------------------------------------------------
+if ($pdo && file_exists($dataFile)) {
+    try {
+        $count = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+        if ($count < 25) {
+            $seedProducts = json_decode(@file_get_contents($dataFile), true) ?: [];
+            if (!empty($seedProducts)) {
+                $ins = $pdo->prepare("
+                    INSERT INTO products (id, name, category, subcategory, description, format, shelf_life, country, image, popular, source_url)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE 
+                        name = VALUES(name),
+                        category = VALUES(category),
+                        subcategory = VALUES(subcategory),
+                        description = VALUES(description),
+                        format = VALUES(format),
+                        shelf_life = VALUES(shelf_life),
+                        country = VALUES(country),
+                        image = VALUES(image),
+                        popular = VALUES(popular)
+                ");
+                $pdo->beginTransaction();
+                foreach ($seedProducts as $sp) {
+                    $ins->execute([
+                        $sp['id'],
+                        $sp['name'],
+                        $sp['category'],
+                        $sp['subcategory'],
+                        $sp['description'],
+                        $sp['format'] ?? '',
+                        $sp['shelfLife'] ?? '',
+                        $sp['country'] ?? 'Chile',
+                        $sp['image'] ?? '',
+                        !empty($sp['popular']) ? 1 : 0,
+                        $sp['sourceUrl'] ?? null
+                    ]);
+                }
+                $pdo->commit();
+            }
+        }
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+    }
 }
 
 // -------------------------------------------------------------
@@ -70,6 +126,12 @@ if (!$pdo) {
     $user = requireAuth();
     $input = getJsonInput();
 
+    // Restauración manual vía API
+    if (isset($_GET['restore']) && $_GET['restore'] === '1' && file_exists($dataFile)) {
+        $seed = json_decode(@file_get_contents($dataFile), true) ?: [];
+        jsonResponse(['success' => true, 'message' => 'Catálogo oficial restaurado.', 'products' => array_map('formatProduct', $seed)]);
+    }
+
     if ($method === 'POST') {
         $name = trim($input['name'] ?? '');
         if (empty($name)) jsonResponse(['success' => false, 'error' => 'El nombre del producto es obligatorio.'], 400);
@@ -92,6 +154,7 @@ if (!$pdo) {
         $found = false;
         foreach ($products as $i => $p) {
             if ($p['id'] === $id) {
+                // Conserva o actualiza todos los campos, permitiendo image=""
                 $products[$i] = formatProduct(array_merge($p, $input));
                 $found = true;
                 break;
@@ -160,8 +223,45 @@ if ($method === 'GET') {
 $user = requireAuth();
 $input = getJsonInput();
 
-// 2. POST: Crear Producto
+// 2. POST: Restaurar o Crear Producto
 if ($method === 'POST') {
+    // Si se solicita restaurar el catálogo completo oficial
+    if (isset($_GET['restore']) && $_GET['restore'] === '1' && file_exists($dataFile)) {
+        $seedProducts = json_decode(@file_get_contents($dataFile), true) ?: [];
+        $ins = $pdo->prepare("
+            INSERT INTO products (id, name, category, subcategory, description, format, shelf_life, country, image, popular, source_url)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE 
+                name = VALUES(name),
+                category = VALUES(category),
+                subcategory = VALUES(subcategory),
+                description = VALUES(description),
+                format = VALUES(format),
+                shelf_life = VALUES(shelf_life),
+                country = VALUES(country),
+                image = VALUES(image),
+                popular = VALUES(popular)
+        ");
+        $pdo->beginTransaction();
+        foreach ($seedProducts as $sp) {
+            $ins->execute([
+                $sp['id'],
+                $sp['name'],
+                $sp['category'],
+                $sp['subcategory'],
+                $sp['description'],
+                $sp['format'] ?? '',
+                $sp['shelfLife'] ?? '',
+                $sp['country'] ?? 'Chile',
+                $sp['image'] ?? '',
+                !empty($sp['popular']) ? 1 : 0,
+                $sp['sourceUrl'] ?? null
+            ]);
+        }
+        $pdo->commit();
+        jsonResponse(['success' => true, 'message' => 'Catálogo oficial de 43 productos restaurado exitosamente en MySQL.', 'products' => array_map('formatProduct', $seedProducts)]);
+    }
+
     $name = trim($input['name'] ?? '');
     $category = trim($input['category'] ?? 'Pastelería');
     $subcategory = trim($input['subcategory'] ?? 'Bases para preparar');
@@ -209,7 +309,7 @@ if ($method === 'POST') {
     ], 201);
 }
 
-// 3. PUT: Actualizar Producto
+// 3. PUT: Actualizar Producto (Permite dejar imagen vacía sin sobrescribir con default)
 if ($method === 'PUT') {
     $id = trim($input['id'] ?? ($_GET['id'] ?? ''));
     if (empty($id)) {
@@ -230,7 +330,8 @@ if ($method === 'PUT') {
     $format = isset($input['format']) ? trim($input['format']) : $current['format'];
     $shelfLife = isset($input['shelfLife']) ? trim($input['shelfLife']) : $current['shelf_life'];
     $country = isset($input['country']) ? trim($input['country']) : $current['country'];
-    $image = isset($input['image']) ? trim($input['image']) : $current['image'];
+    // Si el usuario borró la foto (input['image'] === ""), se guarda exactamente como ""
+    $image = array_key_exists('image', $input) ? trim($input['image']) : $current['image'];
     $popular = isset($input['popular']) ? (!empty($input['popular']) ? 1 : 0) : $current['popular'];
     $sourceUrl = isset($input['sourceUrl']) ? trim($input['sourceUrl']) : $current['source_url'];
 

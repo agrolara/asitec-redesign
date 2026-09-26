@@ -74,7 +74,10 @@ export const CatalogSection: React.FC<Props> = ({
         'https://www.asitec.cl/wp-content/uploads/2021/04/bases-para-preparar-merengue-1.jpg'
       ],
       subcategories: ['Bizcochos & Queques', 'Muffins', 'Crema Pastelera', 'Chantilly', 'Merengue', 'Tres Leches', 'Brillos'],
-      filterFn: (p: Product) => p.category === 'Pastelería'
+      filterFn: (p: Product) => {
+        const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return c.includes('pasteler');
+      }
     },
     {
       id: 'cat-panaderia',
@@ -92,7 +95,10 @@ export const CatalogSection: React.FC<Props> = ({
         'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'
       ],
       subcategories: ['Mejorador Marraqueta', 'Mejorador Hallulla', 'Levaduras Up Bakery', 'Pan de Molde', 'Pan Amasado', '-50% Sodio'],
-      filterFn: (p: Product) => p.category === 'Panadería'
+      filterFn: (p: Product) => {
+        const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return c.includes('panader');
+      }
     },
     {
       id: 'cat-molinos',
@@ -106,7 +112,10 @@ export const CatalogSection: React.FC<Props> = ({
         'https://www.asitec.cl/wp-content/uploads/2019/07/mejorador-marraqueta.jpg'
       ],
       subcategories: ['Mix Vitamínico Harinas', 'Complejos Enzimáticos', 'Blanqueadores', 'Gluten Vital', 'Ácido Ascórbico'],
-      filterFn: (p: Product) => p.category === 'Insumos para Molinos'
+      filterFn: (p: Product) => {
+        const c = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return c.includes('molino');
+      }
     }
   ], []);
 
@@ -253,15 +262,22 @@ export const CatalogSection: React.FC<Props> = ({
                     className="bg-white rounded-2xl border border-orange-100 p-4 shadow-sm hover:shadow-lg hover:border-orange-300 transition-all cursor-pointer flex flex-col justify-between group"
                   >
                     <div>
-                      <div className="h-44 rounded-xl bg-orange-50/30 mb-3 flex items-center justify-center overflow-hidden p-2">
-                        <img 
-                          src={product.image || 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'} 
-                          alt={product.name} 
-                          className="max-h-36 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
-                          }}
-                        />
+                      <div className="h-44 rounded-xl bg-slate-50/80 mb-3 flex items-center justify-center overflow-hidden p-2 border border-slate-100">
+                        {product.image ? (
+                          <img 
+                            src={product.image} 
+                            alt={product.name} 
+                            className="max-h-36 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-white rounded-lg border border-slate-100 flex flex-col items-center justify-center text-slate-300">
+                            <Package className="w-8 h-8 text-slate-200 mb-1" />
+                            <span className="text-[10px] font-semibold text-slate-400">Sin fotografía</span>
+                          </div>
+                        )}
                       </div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-orange-700 bg-orange-100/60 px-2 py-0.5 rounded-full">
                         {product.subcategory}
@@ -486,17 +502,24 @@ export const CatalogSection: React.FC<Props> = ({
                       className="bg-white rounded-2xl border border-orange-100 p-4 shadow-sm hover:shadow-md hover:border-orange-300 transition-all cursor-pointer flex flex-col justify-between group"
                     >
                       <div>
-                        {/* Image */}
-                        <div className="h-40 rounded-xl bg-gradient-to-b from-orange-50/30 to-white flex items-center justify-center p-2 mb-3 border border-orange-50 overflow-hidden">
-                          <img
-                            src={prod.image || 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png'}
-                            alt={prod.name}
-                            className="max-h-32 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm"
-                            loading="lazy"
-                            onError={(e) => {
-                              e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
-                            }}
-                          />
+                        {/* Image / Cuadro en blanco */}
+                        <div className="h-40 rounded-xl bg-slate-50/60 flex items-center justify-center p-2 mb-3 border border-slate-100 overflow-hidden">
+                          {prod.image ? (
+                            <img
+                              src={prod.image}
+                              alt={prod.name}
+                              className="max-h-32 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm"
+                              loading="lazy"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full rounded-lg bg-white border border-slate-100 flex flex-col items-center justify-center text-slate-300">
+                              <Package className="w-8 h-8 text-slate-200 mb-1" />
+                              <span className="text-[10px] font-semibold text-slate-400">Sin fotografía</span>
+                            </div>
+                          )}
                         </div>
 
                         {/* Subcategory & Name */}

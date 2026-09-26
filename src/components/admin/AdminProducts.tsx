@@ -11,10 +11,11 @@ import {
   AlertCircle, 
   Loader2, 
   Package, 
-  Star
+  Star,
+  RefreshCw
 } from 'lucide-react';
 import type { Product } from '../../types';
-import { getProducts, saveProduct, deleteProduct, uploadImage } from '../../services/api';
+import { getProducts, saveProduct, deleteProduct, uploadImage, restoreAllOfficialProducts } from '../../services/api';
 
 export const AdminProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -57,7 +58,9 @@ export const AdminProducts: React.FC = () => {
   }, []);
 
   const filtered = products.filter(p => {
-    const matchCat = categoryFilter === 'Todos' || p.category === categoryFilter;
+    const pCat = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const fCat = categoryFilter.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const matchCat = categoryFilter === 'Todos' || p.category === categoryFilter || pCat.includes(fCat.slice(0, 5));
     const q = search.toLowerCase();
     const matchQ = !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.subcategory.toLowerCase().includes(q);
     return matchCat && matchQ;
@@ -109,6 +112,25 @@ export const AdminProducts: React.FC = () => {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error al eliminar producto.';
       setStatusMessage({ type: 'error', text: msg });
+    }
+  };
+
+  const handleRestoreCatalog = async () => {
+    if (!window.confirm('¿Deseas restaurar todo el catálogo oficial completo de ASITEC (43 Fórmulas: Pastelería, Panadería, Molinos)? Esta acción no afectará tus configuraciones generales.')) {
+      return;
+    }
+
+    setLoading(true);
+    setStatusMessage(null);
+    try {
+      const restored = await restoreAllOfficialProducts();
+      setProducts(restored);
+      setStatusMessage({ type: 'success', text: `¡Catálogo completo restaurado exitosamente! (${restored.length} productos oficiales)` });
+      setTimeout(() => setStatusMessage(null), 4000);
+    } catch {
+      setStatusMessage({ type: 'error', text: 'Error al restaurar catálogo oficial.' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -171,13 +193,26 @@ export const AdminProducts: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nuevo Producto</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleRestoreCatalog}
+            className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-slate-300"
+            title="Restaura los 43 productos oficiales si alguno se borró"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-orange-600" />
+            <span>Restaurar Catálogo (43 Fórmulas)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleOpenCreate}
+            className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nuevo Producto</span>
+          </button>
+        </div>
       </div>
 
       {/* Notification banner */}
@@ -253,18 +288,18 @@ export const AdminProducts: React.FC = () => {
                   <tr key={prod.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center p-0.5">
                           {prod.image ? (
                             <img 
                               src={prod.image} 
                               alt={prod.name} 
                               className="w-full h-full object-contain mix-blend-multiply" 
                               onError={(e) => {
-                                e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
+                                e.currentTarget.style.display = 'none';
                               }}
                             />
                           ) : (
-                            <Package className="w-5 h-5 text-slate-400" />
+                            <span className="text-[8px] text-slate-300 font-bold uppercase tracking-tighter text-center">Sin foto</span>
                           )}
                         </div>
                         <div>
@@ -438,23 +473,42 @@ export const AdminProducts: React.FC = () => {
 
               {/* Image Manager */}
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-                <label className="block font-bold text-slate-800">
-                  Fotografía del Producto
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-slate-800 text-xs">
+                    Fotografía del Producto
+                  </label>
+                  {editingProduct.image ? (
+                    <button
+                      type="button"
+                      onClick={() => setEditingProduct({ ...editingProduct, image: '' })}
+                      className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 hover:underline cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Quitar foto (dejar cuadro en blanco)</span>
+                    </button>
+                  ) : (
+                    <span className="text-[11px] font-medium text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded">
+                      Sin foto asignada (se mostrará cuadro en blanco)
+                    </span>
+                  )}
+                </div>
                 
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-xl bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-xl bg-white border-2 border-dashed border-slate-200 overflow-hidden shrink-0 flex flex-col items-center justify-center p-1 text-center">
                     {editingProduct.image ? (
                       <img 
                         src={editingProduct.image} 
                         alt="Preview" 
-                        className="w-full h-full object-contain" 
+                        className="w-full h-full object-contain mix-blend-multiply" 
                         onError={(e) => {
-                          e.currentTarget.src = 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png';
+                          e.currentTarget.style.display = 'none';
                         }}
                       />
                     ) : (
-                      <Package className="w-8 h-8 text-slate-300" />
+                      <div className="flex flex-col items-center justify-center text-slate-400">
+                        <Package className="w-5 h-5 text-slate-300" />
+                        <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400">En blanco</span>
+                      </div>
                     )}
                   </div>
 
@@ -463,11 +517,11 @@ export const AdminProducts: React.FC = () => {
                       type="text"
                       value={editingProduct.image || ''}
                       onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value })}
-                      placeholder="https://... o sube una imagen desde tu equipo"
+                      placeholder="URL de imagen (dejar vacío para cuadro en blanco)"
                       className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                     />
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <label className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-xs">
                         <Upload className="w-3.5 h-3.5 text-amber-400" />
                         <span>{uploading ? 'Subiendo imagen...' : 'Examinar foto...'}</span>
@@ -479,8 +533,18 @@ export const AdminProducts: React.FC = () => {
                           className="hidden"
                         />
                       </label>
+                      {editingProduct.image && (
+                        <button
+                          type="button"
+                          onClick={() => setEditingProduct({ ...editingProduct, image: '' })}
+                          className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                          <span>Borrar foto</span>
+                        </button>
+                      )}
                       <span className="text-[11px] text-slate-400">
-                        Formatos: JPG, PNG, WEBP (Guardada en /uploads)
+                        La descripción y ficha técnica seguirán mostrándose intactas.
                       </span>
                     </div>
                   </div>

@@ -68,6 +68,22 @@ async function safeParseJson(res: Response): Promise<{ isPhp: boolean; json: any
 // -------------------------------------------------------------
 // 1. PRODUCTOS (Con Arquitectura Híbrida: API + LocalStorage + Static)
 // -------------------------------------------------------------
+// Sanitizador de categoría y datos de producto
+export function sanitizeProduct(p: Product): Product {
+  let cat = p.category || '';
+  const norm = cat.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (norm.includes('pasteler')) cat = 'Pastelería';
+  else if (norm.includes('panader')) cat = 'Panadería';
+  else if (norm.includes('molino')) cat = 'Insumos para Molinos';
+
+  return {
+    ...p,
+    category: cat as Product['category'],
+    // Permitir explícitamente imagen vacía si el usuario decide eliminarla
+    image: typeof p.image === 'string' ? p.image.trim() : ''
+  };
+}
+
 export async function getProducts(category?: string, query?: string): Promise<Product[]> {
   let list: Product[] = [];
   let apiSucceeded = false;
@@ -81,11 +97,8 @@ export async function getProducts(category?: string, query?: string): Promise<Pr
     const res = await fetch(url.toString());
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && json.success && Array.isArray(json.products) && json.products.length > 0) {
-      list = json.products;
+      list = json.products.map(sanitizeProduct);
       apiSucceeded = true;
-      try {
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list));
-      } catch {}
     }
   } catch (err) {
     // API no disponible
@@ -98,19 +111,36 @@ export async function getProducts(category?: string, query?: string): Promise<Pr
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          list = parsed;
+          list = parsed.map(sanitizeProduct);
         }
       }
     } catch {}
 
     if (list.length === 0) {
-      list = [...staticProducts];
+      list = staticProducts.map(sanitizeProduct);
     }
   }
 
-  // 3. Filtrar
+  // 3. SEGURIDAD ANTI-PÉRDIDA: Si por alguna razón la BD o localStorage tiene un catálogo incompleto (menos de 25 productos),
+  // fusionar sin duplicar con el catálogo oficial estático para que NUNCA desaparezcan Pastelería o Panadería
+  if (list.length < 25) {
+    const existingIds = new Set(list.map(p => p.id));
+    const missing = staticProducts.filter(p => !existingIds.has(p.id)).map(sanitizeProduct);
+    list = [...list, ...missing];
+  }
+
+  // Guardar copia limpia en LocalStorage
+  try {
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list));
+  } catch {}
+
+  // 4. Filtrar
   if (category && category !== 'Todos') {
-    list = list.filter(p => p.category === category);
+    const normFilter = category.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    list = list.filter(p => {
+      const normCat = (p.category || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return normCat.includes(normFilter) || normFilter.includes(normCat);
+    });
   }
   if (query) {
     const q = query.toLowerCase();
@@ -124,23 +154,26 @@ export async function getProducts(category?: string, query?: string): Promise<Pr
 }
 
 export async function saveProduct(product: Partial<Product>, isNew: boolean): Promise<Product> {
+  // IMPORTANTE: Permitir imagen vacía ("") cuando el usuario decide eliminarla para que quede en blanco
+  const imageVal = typeof product.image === 'string' ? product.image.trim() : '';
+
   const newProduct: Product = {
     id: product.id || `prod-${Date.now()}`,
     name: product.name || 'Producto Nuevo',
-    category: product.category || 'Pastelería',
+    category: (product.category as Product['category']) || 'Pastelería',
     subcategory: product.subcategory || 'General',
     description: product.description || '',
     format: product.format || 'Formato Industrial',
     shelfLife: product.shelfLife || '12 meses a partir de la fecha de elaboración.',
     country: product.country || 'Chile',
-    image: product.image || 'https://www.asitec.cl/wp-content/uploads/2021/04/Productos-Asitec-2021-01-1.png',
+    image: imageVal,
     popular: product.popular || false
   };
 
   // 1. Guardar de inmediato en LocalStorage
   try {
     const raw = localStorage.getItem(PRODUCTS_KEY);
-    let currentList: Product[] = raw ? JSON.parse(raw) : [...staticProducts];
+    let currentList: Product[] = raw ? JSON.parse(raw) : staticProducts.map(sanitizeProduct);
     if (isNew) {
       currentList = [newProduct, ...currentList.filter(p => p.id !== newProduct.id)];
     } else {
@@ -163,13 +196,34 @@ export async function saveProduct(product: Partial<Product>, isNew: boolean): Pr
 
     const { isPhp, json } = await safeParseJson(res);
     if (!isPhp && json && json.success && json.product) {
-      return json.product;
+      return sanitizeProduct(json.product);
     }
   } catch {
     // Si no hay backend PHP disponible, el guardado local ya garantizó persistencia
   }
 
   return newProduct;
+}
+
+export async function restoreAllOfficialProducts(): Promise<Product[]> {
+  try {
+    const res = await fetch(`${API_BASE}/products.php?restore=1`, {
+      method: 'POST',
+      headers: getAuthHeaders()
+    });
+    const { isPhp, json } = await safeParseJson(res);
+    if (!isPhp && json && json.success && Array.isArray(json.products) && json.products.length > 0) {
+      const sanitized = json.products.map(sanitizeProduct);
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(sanitized));
+      window.dispatchEvent(new CustomEvent('asitec_products_updated', { detail: sanitized }));
+      return sanitized;
+    }
+  } catch {}
+
+  const restored = staticProducts.map(sanitizeProduct);
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(restored));
+  window.dispatchEvent(new CustomEvent('asitec_products_updated', { detail: restored }));
+  return restored;
 }
 
 export async function deleteProduct(productId: string): Promise<void> {
