@@ -11,27 +11,115 @@ require_once __DIR__ . '/config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = getDbConnection();
+$dataFile = __DIR__ . '/data_products.json';
 
 // Función helper para formatear producto a camelCase (frontend React)
 function formatProduct(array $row): array {
     return [
-        'id'          => $row['id'],
-        'name'        => $row['name'],
-        'category'    => $row['category'],
-        'subcategory' => $row['subcategory'],
-        'description' => $row['description'],
+        'id'          => $row['id'] ?? '',
+        'name'        => $row['name'] ?? '',
+        'category'    => $row['category'] ?? 'Pastelería',
+        'subcategory' => $row['subcategory'] ?? 'General',
+        'description' => $row['description'] ?? '',
         'format'      => $row['format'] ?? '',
-        'shelfLife'   => $row['shelf_life'] ?? '',
+        'shelfLife'   => $row['shelf_life'] ?? ($row['shelfLife'] ?? ''),
         'country'     => $row['country'] ?? 'Chile',
         'image'       => $row['image'] ?? '',
         'popular'     => (bool)($row['popular'] ?? 0),
-        'sourceUrl'   => $row['source_url'] ?? null
+        'sourceUrl'   => $row['source_url'] ?? ($row['sourceUrl'] ?? null)
     ];
 }
 
 // -------------------------------------------------------------
-// 1. GET: Listar todos o filtrar
+// MANEJO OFFLINE / SIN BASE DE DATOS INICIALIZADA
 // -------------------------------------------------------------
+if (!$pdo) {
+    $products = [];
+    if (file_exists($dataFile)) {
+        $json = @file_get_contents($dataFile);
+        if ($json) $products = json_decode($json, true) ?: [];
+    }
+
+    if ($method === 'GET') {
+        if (isset($_GET['id'])) {
+            $id = $_GET['id'];
+            foreach ($products as $p) {
+                if ($p['id'] === $id) jsonResponse(['success' => true, 'product' => formatProduct($p)]);
+            }
+            jsonResponse(['success' => false, 'error' => 'Producto no encontrado.'], 404);
+        }
+
+        $filtered = $products;
+        if (!empty($_GET['category']) && $_GET['category'] !== 'Todos') {
+            $cat = $_GET['category'];
+            $filtered = array_values(array_filter($filtered, fn($p) => ($p['category'] ?? '') === $cat));
+        }
+        if (!empty($_GET['q'])) {
+            $q = strtolower($_GET['q']);
+            $filtered = array_values(array_filter($filtered, fn($p) => 
+                str_contains(strtolower($p['name'] ?? ''), $q) ||
+                str_contains(strtolower($p['description'] ?? ''), $q) ||
+                str_contains(strtolower($p['subcategory'] ?? ''), $q)
+            ));
+        }
+
+        jsonResponse(['success' => true, 'products' => array_map('formatProduct', $filtered)]);
+    }
+
+    // Operaciones con Auth
+    $user = requireAuth();
+    $input = getJsonInput();
+
+    if ($method === 'POST') {
+        $name = trim($input['name'] ?? '');
+        if (empty($name)) jsonResponse(['success' => false, 'error' => 'El nombre del producto es obligatorio.'], 400);
+
+        $id = trim($input['id'] ?? '');
+        if (empty($id)) {
+            $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $name));
+            $id = substr($slug, 0, 50) . '-' . rand(100, 999);
+        }
+        $newProd = formatProduct(array_merge($input, ['id' => $id]));
+        array_unshift($products, $newProd);
+        @file_put_contents($dataFile, json_encode($products, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        jsonResponse(['success' => true, 'message' => 'Producto guardado.', 'product' => $newProd], 201);
+    }
+
+    if ($method === 'PUT') {
+        $id = trim($input['id'] ?? ($_GET['id'] ?? ''));
+        if (empty($id)) jsonResponse(['success' => false, 'error' => 'ID no proporcionado.'], 400);
+
+        $found = false;
+        foreach ($products as $i => $p) {
+            if ($p['id'] === $id) {
+                $products[$i] = formatProduct(array_merge($p, $input));
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $products[] = formatProduct(array_merge($input, ['id' => $id]));
+        }
+        @file_put_contents($dataFile, json_encode($products, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        jsonResponse(['success' => true, 'message' => 'Producto actualizado.', 'product' => formatProduct(array_merge($input, ['id' => $id]))]);
+    }
+
+    if ($method === 'DELETE') {
+        $id = trim($_GET['id'] ?? ($input['id'] ?? ''));
+        if (empty($id)) jsonResponse(['success' => false, 'error' => 'ID no proporcionado.'], 400);
+
+        $products = array_values(array_filter($products, fn($p) => $p['id'] !== $id));
+        @file_put_contents($dataFile, json_encode($products, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        jsonResponse(['success' => true, 'message' => 'Producto eliminado.']);
+    }
+
+    jsonResponse(['success' => false, 'error' => 'Método no soportado.'], 405);
+}
+
+// -------------------------------------------------------------
+// MANEJO CON MYSQL ACTIVO
+// -------------------------------------------------------------
+// 1. GET: Listar todos o filtrar
 if ($method === 'GET') {
     if (isset($_GET['id'])) {
         $stmt = $pdo->prepare("SELECT * FROM products WHERE id = ? LIMIT 1");
@@ -68,15 +156,11 @@ if ($method === 'GET') {
     jsonResponse(['success' => true, 'products' => $products]);
 }
 
-// -------------------------------------------------------------
 // OPERACIONES PROTEGIDAS (POST, PUT, DELETE)
-// -------------------------------------------------------------
 $user = requireAuth();
 $input = getJsonInput();
 
-// -------------------------------------------------------------
 // 2. POST: Crear Producto
-// -------------------------------------------------------------
 if ($method === 'POST') {
     $name = trim($input['name'] ?? '');
     $category = trim($input['category'] ?? 'Pastelería');
@@ -125,9 +209,7 @@ if ($method === 'POST') {
     ], 201);
 }
 
-// -------------------------------------------------------------
 // 3. PUT: Actualizar Producto
-// -------------------------------------------------------------
 if ($method === 'PUT') {
     $id = trim($input['id'] ?? ($_GET['id'] ?? ''));
     if (empty($id)) {
@@ -178,9 +260,7 @@ if ($method === 'PUT') {
     ]);
 }
 
-// -------------------------------------------------------------
 // 4. DELETE: Eliminar Producto
-// -------------------------------------------------------------
 if ($method === 'DELETE') {
     $id = trim($_GET['id'] ?? ($input['id'] ?? ''));
     if (empty($id)) {
